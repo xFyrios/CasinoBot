@@ -1,0 +1,49 @@
+# Main settings
+nick = 'Vertigo'
+name = 'Vertigo'
+host = '69.69.69.69'
+port = 6667
+
+# Reconnect delay
+delay = 120
+channels = ['#GazelleGames', '#GGn-Help']
+owner = 'GGn-developer'
+
+# password is the NickServ password, serverpass is the server password
+password = 'nickservpass'
+#serverpass = 'serverpass'
+
+# Auth info for the bot to become OPER - Disable to turn off OPER commands
+#operuser = ''
+#operpass = ''
+
+# These are people who will be able to use admin.py's functions...
+admins = [owner]
+# These are people that will be able to use the !join and !itemdrop commands
+mods = [owner]
+# But admin.py is disabled by default, as follows:
+exclude = ['admin','validate']
+
+# If you want to enumerate a list of modules rather than disabling
+# some, use "enable = ['example']", which takes precedent over exclude
+# 
+# enable = []
+
+# Directories to load user modules from
+# e.g. /path/to/my/modules
+extra = ['modules/gazelle']
+
+# set the command prefix string eg: '.' for commands like .semag
+prefix = '!'
+
+# Gazelle Config
+gazelle_url    = 'gazellegames.net'
+gazelle_apiurl = 'https://' + gazelle_url + '/ircapi.php'
+gazelle_apikey = ''
+
+# Announce Config
+announce_path = '/var/run/semag/semag.sock'
+announce_port = 51010
+announce_host = "127.0.0.1"
+
+# EOF

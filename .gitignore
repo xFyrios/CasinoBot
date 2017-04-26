@@ -1,0 +1,6 @@
+*.pyc
+.config/*.db
+*.log
+.config/default.py
+*.bak
+*.db
