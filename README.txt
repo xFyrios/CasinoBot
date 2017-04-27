@@ -7,4 +7,7 @@ Installation &c.
 Enjoy!
 
 -- 
-Sean B. Palmer, http://inamidst.com/sbp/
+To add new casino modules, place the main supporting module in casino/. 
+This will have the games main functionality and tie into the cards and player modules.
+Next place a second module for the game in modules/gazelle/ that contains the IRC commands
+and link it back to the main game module in casino/.
