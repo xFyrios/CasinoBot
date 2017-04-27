@@ -164,6 +164,7 @@ class Game:
     def play(self):
         if len(p.in_game) == 0:
             self.game_over()  # All players already lost
+	    return
         p.in_game = p.in_game[::-1]  # Start by reversing the in-game list as the dealer starts on their left
 
         # Hit or stand? Keep asking until the user stands or busts
