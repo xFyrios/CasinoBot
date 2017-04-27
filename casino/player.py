@@ -16,9 +16,11 @@ class Player:
         self.bet = 0
         self.hand = cards.Hand()
         self.in_game = False
+        self.wins = 0
+        self.losses = 0
 
     def __str__(self):
-        string = "Player ID: %s  Name: %s  Gold: %d" % (self.uid, self.name, self.gold)
+        string = "Player ID: %s  Name: %s  Gold: %d  Wins: %d  Losses: %d" % (self.uid, self.name, self.gold, self.wins, self.losses)
         if self.bet > 0:
             string += "  Bet: %d" % self.bet
         return string
@@ -67,6 +69,15 @@ class Player:
 
     # Functions for winning/losing/ties
     def win_natural(self, phenny):
+        self.wins += 1
+        dbuid = str(self.uid)
+        db = shelve.open('casino.db')
+        try:
+            p = db[dbuid]
+            p.wins += 1
+            db[dbuid] = p
+        finally:
+            db.close()
         winnings = self.bet * 1.5
         self.add_gold(phenny, winnings + self.bet)
         self.bet = 0
@@ -75,6 +86,15 @@ class Player:
         return "%s has a natural blackjack! They won %d gold (1.5x bet)! They now have %d gold." % (self.name, winnings, self.gold)
 
     def win(self, phenny):
+        self.wins += 1
+        dbuid = str(self.uid)
+        db = shelve.open('casino.db')
+        try:
+            p = db[dbuid]
+            p.wins += 1
+            db[dbuid] = p
+        finally:
+            db.close()
         winnings = self.bet
         self.add_gold(phenny, winnings + self.bet)
         self.bet = 0
@@ -83,6 +103,15 @@ class Player:
         return "%s beat the dealer! They won %d gold! They now have %d gold." % (self.name, winnings, self.gold)
 
     def lose(self, phenny):
+        self.losses += 1
+        dbuid = str(self.uid)
+        db = shelve.open('casino.db')
+        try:
+            p = db[dbuid]
+            p.losses += 1
+            db[dbuid] = p
+        finally:
+            db.close()
         players[0].add_gold(phenny, self.bet)
         bet = self.bet
         self.bet = 0
@@ -104,6 +133,10 @@ def add_player(uid, nick):
         try: 
             if dbuid in db:
                 players[uid] = db[dbuid]
+		if not hasattr(players[uid], 'wins'):
+	                players[uid].wins = 0
+        	        players[uid].losses = 0
+			db[dbuid] = players[uid]
             else:
                 players[uid] = Player(uid, nick)
                 db[dbuid] = players[uid]
