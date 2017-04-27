@@ -10,6 +10,7 @@ bots = ['CasinoBot', 'Vertigo', 'Antilopinae']
 
 game = False # Holds the game object
 in_play = False  # Used to test if the game is in play
+starting = False # Used to prevent 2 games in the rare instance 2 people try to start one at once
 game_type = None  # Used to record what type of game is currently running
 leaving = []  # Used to hold player ids of players who ran !left but we are waiting on confirmation from
 
@@ -21,7 +22,7 @@ help = OrderedDict([('start', "To start a game use the command '!start gamename'
                     ('buy', "To buy into a game, use the command '!buy amount'. Ex. !buy 1000. "
                             "This will remove 1000 gold from you on-site and add it to your betting pool."),
                     ('sell', "To cash out use the command '!sell amount'. Ex. !sell 1000. This will remove 1000 "
-                             "gold from your betting pool and add it back to your account on-site."),
+                             "gold from your betting pool and add it back to your account on-site. Use '!sell all' to cash out fully."),
                     ('bet', "To place a bet use the command '!bet amount'. Ex. !bet 100. You can only"
                             "bet during betting rounds."),
                     ('allin', "To bet all of your gold use the command '!allin'. You can only bet during betting rounds."),
@@ -95,7 +96,7 @@ def sell(phenny, input):
         return
 
     # Mod command, make all users sell
-    if args[0] == "all":
+    if args[0] == "out":
         if input.mod:
             for uid in p.players.keys():
                 if p.players[uid].gold > 0:
@@ -108,10 +109,20 @@ def sell(phenny, input):
         else:
             phenny.say("You do not have permission to use this command.")
 
+    elif args[0] == "all":
+        if input.uid in p.players.keys():
+            amount = p.players[input.uid].gold
+            success = phenny.callGazelleApi({'uid': input.uid, 'amount': amount, 'action': 'sellGold'})
+            if success == False or success['status'] == "error":
+                phenny.write(('NOTICE', input.nick + " An unknown error occurred."))  # NOTICE
+            else:
+                p.players[input.uid].remove_gold(amount)
+                phenny.write(('NOTICE', input.nick + " You sold " + str(amount) + " gold worth of chips."))  # NOTICE
+
     else:
         amount = args[0]
-        if amount.isdigit() and amount > 0 and input.uid in p.players.keys():
-            if amount > p.players[input.uid].gold:
+        if amount.isdigit() and int(amount) > 0 and input.uid in p.players.keys():
+            if int(amount) > p.players[input.uid].gold:
                 amount = p.players[input.uid].gold
             success = phenny.callGazelleApi({'uid': input.uid, 'amount': amount, 'action': 'sellGold'})
             if success == False or success['status'] == "error":
@@ -139,6 +150,7 @@ players.priority = 'low'
 
 def player(phenny, input):
     args = check_args(phenny, input.group(0))
+    join_casino(input)
     if len(args) == 0:
         uid = input.uid
     elif args[0].isdigit():
@@ -161,25 +173,29 @@ balance.priority = 'low'
 
 # Start a new game
 def start(phenny, input):
-    global game, in_play, game_type, arguments, help, temp_cmds
-    args = check_args(phenny, input.group(0))
-    if not args:
-        return
+    global game, in_play, game_type, starting, arguments, help, temp_cmds
+    if not starting:
+        starting = True
+        args = check_args(phenny, input.group(0))
+        if not args:
+            starting = False
+            return
 
-    if in_play:
-        phenny.say("A game is already in play! Wait for it to end, then try again.")
-    else:
-        #NEW BLACKJACK GAME
-        if args[0] == "blackjack":
-            join_casino(input)
-            game = blackjack.Game(phenny, input.uid, input.nick)
-            in_play = True
-            game_type = 'blackjack'
-            for item,string in blackjack.help.items():
-                help[item] = string
-            for item,args in blackjack.arguments.items():
-                arguments[item] = args
-                temp_cmds.append(item)
+        if in_play:
+            phenny.say("A game is already in play! Wait for it to end, then try again.")
+        else:
+            #NEW BLACKJACK GAME
+            if args[0] == "blackjack":
+                in_play = True
+                join_casino(input)
+                game = blackjack.Game(phenny, input.uid, input.nick)
+                game_type = 'blackjack'
+                for item,string in blackjack.help.items():
+                    help[item] = string
+                for item,args in blackjack.arguments.items():
+                    arguments[item] = args
+                    temp_cmds.append(item)
+        starting = False
 start.commands = ['start']
 start.priority = 'low'
 
@@ -248,8 +264,10 @@ def bet(phenny, input):
             phenny.say(p.players[input.uid].place_bet(amount))
         else:
             phenny.say("You can only bet with a positive, non-decimal amount of gold. Ex. !bet 100")
-    elif in_play:
+    elif in_play and input.uid in p.in_game:
         phenny.write(('NOTICE', input.nick + " There is currently no betting round ongoing."))  # NOTICE
+    elif in_play:
+        phenny.write(('NOTICE', input.nick + " You are not in the current game.")) # NOTICE
 bet.commands = ['bet']
 bet.priority = 'high'
 

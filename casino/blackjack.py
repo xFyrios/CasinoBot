@@ -124,9 +124,8 @@ class Game:
             dealer_win = True
             self.phenny.say("The dealer started with a natural blackjack!")
             self.show_full_table()
-        print 'Checking users' + str(p.in_game)
-        for uid in p.in_game:
-            print str(uid)
+
+        for uid in p.in_game[:]:
             if p.players[uid].hand.hand_value() == 21:
                 if dealer_win:
                     p.players[uid].tie(self.phenny)
@@ -252,7 +251,7 @@ class Game:
                 self.stand(uid) 
 
     def set_doubledown(self, uid):
-        if p.players[uid].hand.hand_value() in [9,10,11] and p.players[uid].gold >= p.players[uid].bet: 
+        if p.players[uid].hand.hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet):
             # We allow double downs when hand value is 9,10, or 11 and the player has enough gold to double their bet
             self.accept_doubledown = True
 
