@@ -64,11 +64,6 @@ def startup(phenny, input):
 
 	if hasattr(phenny.config, 'operuser'):
 		phenny.write(('OPER', phenny.config.operuser, phenny.config.operpass))
-
-	# Cf. http://swhack.com/logs/2005-12-05#T19-32-36
-	#for channel in phenny.channels: 
-	#	phenny.write(('SAJOIN', 'Vertigo', channel))
-	#	time.sleep(0.5)
 	
 	# Get list of channels from the API
 	i = phenny.callGazelleApi({'username': phenny.config.nick, 'action': 'userInfo'})

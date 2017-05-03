@@ -1,12 +1,12 @@
 # Main settings
-nick = 'Vertigo'
-name = 'Vertigo'
+nick = 'CasinoBot'
+name = 'CasinoBot'
 host = '69.69.69.69'
 port = 6667
 
 # Reconnect delay
 delay = 120
-channels = ['#GazelleGames', '#GGn-Help']
+channels = ['#Casino']
 owner = 'GGn-developer'
 
 # password is the NickServ password, serverpass is the server password
