@@ -16,6 +16,7 @@ def user(phenny, input):
 	else:
 		userName = input.group(2).strip()
 	i = phenny.callGazelleApi({'username': userName, 'action': 'userInfo'})
+	print(i)
 	
 	try:
 		# Username
@@ -75,6 +76,28 @@ def user(phenny, input):
 user.commands = ['u', 'user']
 user.priority = 'high'
 user.example = '!u Daedy'
+
+def tip(phenny, input):
+    """ For tipping a user on site with gold."""
+
+    args = input.group(0).split()
+    args.pop(0)
+    
+    totip = args[0]
+    amount = args[1]
+
+    if not amount.isdigit():
+        phenny.say('To tip a user use the command !tip user amount')
+    elif int(amount) <= 0:
+        phenny.say('You tried to tip an invalid amount.')
+    else:
+        i = phenny.callGazelleApi({'userid': input.uid, 'mod': input.mod, 'totip': totip, 'amount': amount, 'action': 'tipUser'})
+        if i == False or i['status'] == "error":
+            phenny.say(i['error']);
+        else:
+            phenny.say(i['msg'])
+tip.commands = ['tip']
+tip.example = '!tip Daedy 10'
 
 if __name__ == '__main__': 
 	print(__doc__)
