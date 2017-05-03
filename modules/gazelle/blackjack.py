@@ -21,7 +21,7 @@ surrender.commands = ['surrender', 'Surrender']
 def doubledown(phenny, input):
     if casino.game:
         casino.game.doubledown(input.uid)
-doubledown.commands = ['doubledown','double']
+doubledown.commands = ['doubledown','DoubleDown','double','Double']
 
 def hand(phenny, input):
     if casino.game:
