@@ -12,7 +12,7 @@ DELAY_TIME = 30.0
 arguments = {'hit': 0, 'stand': 0, 'stay': 0, 'split': 0,'surrender': 0, 'doubledown': 0, 'double': 0}
 help = OrderedDict([('hit', "To tell the dealer to give you another card, use the command '!hit'."),
                     ('stand', "To tell the dealer to not give you anymore cards, use the command '!stand'."),
-                    ('split', "To split your deck, use the command '!split'.")
+                    ('split', "To split your deck, use the command '!split'."),
                     ('surrender', "To surrender and give up half of your bet, use the command '!surrender'."),
                     ('doubledown', "To double your bet use the command '!doubledown'. This only works if your "
                                     "hand value is 9, 10, or 11 and it is your first turn. After you will hit once then stand.")])
@@ -43,6 +43,8 @@ class Game:
         self.accept_bets = False
         self.accept_surrender = False
         self.accept_doubledown = False
+        self.accept_split = False
+        self.accept_hit = False
         self.t = False  # Used for the delay timer so that we can reset it from the !join command
         self.timer_start = 0  # Used for calculating whether or not we should reset the timer on !join
         self.starter_uid = False
@@ -218,6 +220,16 @@ class Game:
                 self.t = False
 
             self.next_player()
+
+    def split(self, uid):
+        if self.accept_split and self.turns and self.turns[0] == uid:
+            del self.turns[0]
+
+            if self.t and self.t.is_alive():
+                self.t.cancel()
+                self.t = False
+
+
 
     def surrender(self, uid):
         if self.accept_surrender and self.turns and self.turns[0] == uid:
