@@ -68,7 +68,7 @@ class Hand:
         del self.cards[:]
 
     def has_pair(self):
-        return len([VALUES[c] for c in self.cards]) != len(set([VALUES[c] for c in self.cards]))
+        return len([VALUES[c.rank] for c in self.cards]) != len(set([VALUES[c.rank] for c in self.cards]))
 
     def card_count(self):
         return len(self.cards)
