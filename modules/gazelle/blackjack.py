@@ -8,8 +8,8 @@ def hit(phenny, input):
         if not args:
             casino.game.hit(input.uid)
 
-        if args[0].isdigit():
-            handid = int(args[0])
+        if args[0].isdigit() and int(args[0]) > 0:
+            handid = int(args[0]) - 1
             casino.game.hit(input.uid, handid)
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !hit 1"))
@@ -22,9 +22,9 @@ def stand(phenny, input):
         if not args:
             casino.game.stand(input.uid)
 
-        if args[0].isdigit():
-            handid = int(args[0])
-            casino.game.stand(input.uid, handid)
+        if args[0].isdigit() and int(args[0]) > 0:
+            handid = int(args[0]) - 1
+            casino.game.stand(input.uid, handid )
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !stand 1"))
 stand.commands = ['stand', 'Stand', 'stay', 'Stay', 's']
@@ -35,8 +35,8 @@ def split(phenny, input):
         if not args:
             casino.game.split(input.uid)
 
-        if args[0].isdigit():
-            handid = int(args[0])
+        if args[0].isdigit() and int(args[0]) > 0:
+            handid = int(args[0]) - 1
             casino.game.split(input.uid, handid)
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !split 1"))
@@ -53,8 +53,8 @@ def doubledown(phenny, input):
         if not args:
             casino.game.doubledown(input.uid)
 
-        if args[0].isdigit():
-            handid = int(args[0])
+        if args[0].isdigit() and int(args[0]) > 0:
+            handid = int(args[0]) - 1
             casino.game.doubledown(input.uid, handid)
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !doubledown 1"))
