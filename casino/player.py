@@ -218,7 +218,7 @@ def deal(deck, amount, handid=0):
         for uid in players:
             #players[uid].hand[handid].add_card(deck.deal_card())
             # DEBuG
-            players[uid].hand[handid].add_card(Card(SUITS[0], RANKS[10]))
+            players[uid].hand[handid].add_card(cards.Card(cards.SUITS[0], cards.RANKS[10]))
         amount -= 1
 
 if __name__ == '__main__':
