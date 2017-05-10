@@ -285,7 +285,7 @@ class Game:
                 self.split_aces = False
                 del self.turns[0]
 
-            if len(p.in_game()) == 0:
+            if len(p.in_game) == 0:
                 self.show_full_table()
                 self.game_over()  # All players lost, end the game
             elif len(self.turns) > 0 and self.turns[0] == uid:
@@ -343,7 +343,7 @@ class Game:
             if p.players[uid].count_hands() == 0:
                 del self.turns[0]
                 self.next_player()
-            elif len(p.in_game()) == 0:
+            elif len(p.in_game) == 0:
                 self.show_full_table()
                 self.game_over()  # All players lost, end the game
             else:
