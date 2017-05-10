@@ -14,7 +14,8 @@ class Player:
         self.name = name
         self.gold = 0
         self.bet = 0
-        self.hand = cards.Hand()
+        self.hand = [] # a player can have multiple hands in some games (eg after splitting in blackjack)
+        self.hand.append(cards.Hand())
         self.in_game = False
         self.wins = 0
         self.losses = 0
@@ -35,7 +36,7 @@ class Player:
         self.gold += int(gold)
         if self.uid != 0:
             db = shelve.open('casino.db')
-            try: 
+            try:
                 p = db[self.uid]
                 p.gold = self.gold
                 db[self.uid] = p
@@ -130,7 +131,7 @@ def add_player(uid, nick):
     if uid != 0:
         dbuid = str(uid)
         db = shelve.open('casino.db')
-        try: 
+        try:
             if dbuid in db:
                 players[uid] = db[dbuid]
 		if not hasattr(players[uid], 'wins'):
@@ -208,12 +209,15 @@ def list_in_game():
     return "Players In-Game: %s" % player_names[:-2]
 
 
-def deal(deck, amount):
+def deal(deck, handid, amount):
     while amount > 0:
         for uid in players:
-            players[uid].hand.add_card(deck.deal_card())
+            players[uid].hand[handid].add_card(deck.deal_card())
         amount -= 1
 
+def deal_cards(handid, cards, uid):
+    for c in cards:
+        players[uid].hand[handid].add_card(c)
 
 if __name__ == '__main__':
     print(__doc__)

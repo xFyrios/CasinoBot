@@ -52,13 +52,13 @@ class Game:
         self.phenny = phenny
 
         p.add_player(0, 'Dealer')
-        p.players[0].hand.hand_value = MethodType(hand_value, p.players[0].hand)
+        p.players[0].hand[0].hand_value = MethodType(hand_value, p.players[0].hand[0])
         p.players[0].add_gold(self.phenny, 1000000)
         self.starter_uid = uid
 
         self.phenny.say("A new game of blackjack has begun! Type !enter if you'd like to play. You have 30 seconds to join.")
         self.phenny.say(p.add_to_game(self.phenny, uid))
-        p.players[uid].hand.hand_value = MethodType(hand_value, p.players[uid].hand)
+        p.players[uid].hand[0].hand_value = MethodType(hand_value, p.players[uid].hand[0])
         self.t = Timer(DELAY_TIME, self.begin_game)
         self.timer_start = time.time()
         self.t.start()
@@ -67,7 +67,7 @@ class Game:
         if len(p.in_game) < 6 and uid not in p.in_game:
             msg = p.add_to_game(self.phenny, uid)
             # Add the hand_value function
-            p.players[uid].hand.hand_value = MethodType(hand_value, p.players[uid].hand)
+            p.players[uid].hand[0].hand_value = MethodType(hand_value, p.players[uid].hand[0])
 
             # Joining during betting
             if not self.accept_bets:
@@ -113,23 +113,23 @@ class Game:
 
         # Deal the cards to the players
         self.phenny.say("The Dealer begins dealing...")
-        p.deal(self.deck, 2)
+        p.deal(self.deck, 0, 2)
 
         # Show cards
         for uid in p.in_game:
-            self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand)))   # NOTICE
+            self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand[0])))   # NOTICE
         self.show_table()
         self.started = True
 
         # Check for naturals (an immediate blackjack)
         dealer_win = False
-        if p.players[0].hand.hand_value() == 21:
+        if p.players[0].hand[0].hand_value() == 21:
             dealer_win = True
             self.phenny.say("The dealer started with a natural blackjack!")
             self.show_full_table()
 
         for uid in p.in_game[:]:
-            if p.players[uid].hand.hand_value() == 21:
+            if p.players[uid].hand[0].hand_value() == 21:
                 if dealer_win:
                     p.players[uid].tie(self.phenny)
                     self.phenny.say(str("%s and the dealer both have natural blackjacks. They tie!" % p.players[uid].name))
@@ -146,20 +146,36 @@ class Game:
         table = 'Table: '
         table += 'Dealer - ' + self.show_dealers_hand() + ' '
         for uid in p.in_game:
-            table += p.players[uid].name + " - " + str(p.players[uid].hand) + ' '
+            if len(p.players[uid].hand) > 1:
+                hands = ''
+                i = 1
+                for hand in p.players[uid].hand
+                    hands += "Hand %s " %i + str(hand)
+                    i += 1
+            else:
+                hands = str(p.players[uid].hand[0])
+            table += p.players[uid].name + " - " + hands + ' '
         self.phenny.say(table)
 
     # Shows all of dealers cards
     def show_full_table(self):
         table = 'Table: '
-        table += 'Dealer - ' + str(p.players[0].hand) + ' '
+        table += 'Dealer - ' + str(p.players[0].hand[0]) + ' '
         for uid in p.in_game:
-            table += p.players[uid].name + " - " + str(p.players[uid].hand) + ' '
+            if len(p.players[uid].hand) > 1:
+                hands = ''
+                i = 1
+                for hand in p.players[uid].hand
+                    hands += "Hand %s " %i + str(hand)
+                    i += 1
+            else:
+                hands = str(p.players[uid].hand[0])
+            table += p.players[uid].name + " - " + hands + ' '
         self.phenny.say(table)
 
     @staticmethod
     def show_dealers_hand():
-        dealer = str(p.players[0].hand).split(" ")
+        dealer = str(p.players[0].hand[0]).split(" ")
         dealer[0] = "1,01XX"
         dealer = " ".join(dealer)
         return dealer
@@ -188,15 +204,15 @@ class Game:
         self.t = Timer(30.0, self.stand, [uid, True])
         self.t.start()
 
-    def hit(self, uid):
+    def hit(self, uid, handid=0):
         if self.turns and self.turns[0] == uid:
-            p.players[uid].hand.add_card(self.deck.deal_card())
-            self.phenny.say("Hit. %s: %s" % (p.players[uid].name, str(p.players[uid].hand)))
+            p.players[uid].hand[handid].add_card(self.deck.deal_card())
+            self.phenny.say("Hit. %s: %s" % (p.players[uid].name, str(p.players[uid].hand[handid])))
             if self.t and self.t.is_alive():
                 self.t.cancel()
                 self.t = False
 
-            if p.players[uid].hand.hand_value() > 21:
+            if p.players[uid].hand[handid].hand_value() > 21:
                 p.players[uid].lose(self.phenny)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
                 del self.turns[0]
@@ -204,7 +220,7 @@ class Game:
             if len(self.turns) > 0 and self.turns[0] == uid: # This players next move
                 self.accept_surrender = False
                 self.accept_doubledown = False
-                self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand)))   # NOTICE
+                self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand[handid])))   # NOTICE
                 self.phenny.say("Hit. %s. !Stand or !Hit?" % p.players[uid].name)
                 self.t = Timer(30.0, self.stand, [uid, True])
                 self.t.start()
@@ -256,36 +272,36 @@ class Game:
 
             self.next_player()
 
-    def doubledown(self, uid):
+    def doubledown(self, uid, handid=0):
         if self.accept_doubledown and self.turns and self.turns[0] == uid:
             bet = p.players[uid].bet
             self.phenny.say(p.players[uid].place_bet(bet))
 
-            p.players[uid].hand.add_card(self.deck.deal_card())
-            self.phenny.say("Hit. %s: %s" % (p.players[uid].name, str(p.players[uid].hand)))
+            p.players[uid].hand[handid].add_card(self.deck.deal_card())
+            self.phenny.say("Hit. %s: %s" % (p.players[uid].name, str(p.players[uid].hand[handid])))
 
-            if p.players[uid].hand.hand_value() > 21:
+            if p.players[uid].hand[handid].hand_value() > 21:
                 p.players[uid].lose(self.phenny)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
                 self.next_player()
             else:
                 self.stand(uid)
 
-    def set_doubledown(self, uid):
-        if p.players[uid].hand.hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet):
+    def set_doubledown(self, uid, handid=0):
+        if p.players[uid].hand[handid].hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet):
             # We allow double downs when hand value is 9,10, or 11 and the player has enough gold to double their bet
             self.accept_doubledown = True
 
-    def set_split(self,uid):
+    def set_split(self,uid, handid=0):
         if int(p.players[uids].gold) >= int(p.players[uid].bet):
-            self.accept_split = p.players[uid].hand.has_pair()
+            self.accept_split = p.players[uid].hand[handid].has_pair()
 
     def next_player(self):
         if len(self.turns) > 0:
             uid = self.turns[0]
             self.accept_surrender = True
             self.set_doubledown(uid)
-            self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand)))   # NOTICE
+            self.hand(uid)   # NOTICE
             if self.accept_doubledown:
                 self.phenny.say("%s. !Stand, !Hit, !Surrender, or !DoubleDown?" % p.players[uid].name)
             else:
@@ -299,31 +315,39 @@ class Game:
 
     def hand(self, uid):
         if uid in p.in_game:
-            self.phenny.write(('NOTICE', " Your Hand: %s" % p.players[uid].hand))
+            if len(p.players[uid].hand) > 1:
+                hands = 'Your Hands: '
+                i = 1
+                for hand in p.players[uid].hand
+                    hands += "Hand %s " %i + str(hand)
+                    i += 1
+            else:
+                hands = "Your Hand: %s" %p.players[uid].hand[0]
+            self.phenny.write(('NOTICE', hands))
 
     def dealer_play(self):
         self.phenny.say("Alright, Dealers Turn. The dealer flips his card upright...")
-        self.phenny.say("Dealer's Hand: " + str(p.players[0].hand))
-        while p.players[0].hand.hand_value() < 17:
-            p.players[0].hand.add_card(self.deck.deal_card())
-            self.phenny.say("Hit. Dealer: " + str(p.players[0].hand))
-            if p.players[0].hand.hand_value() > 21:
+        self.phenny.say("Dealer's Hand: " + str(p.players[0].hand[0]))
+        while p.players[0].hand[0].hand_value() < 17:
+            p.players[0].hand[0].add_card(self.deck.deal_card())
+            self.phenny.say("Hit. Dealer: " + str(p.players[0].hand[0]))
+            if p.players[0].hand[0].hand_value() > 21:
                 self.phenny.say("BUST! The Dealer went over 21. All remaining players win!")
                 for uid in p.in_game[:]:
                     p.players[uid].win(self.phenny)
                 self.game_over()
                 break
         else :
-            self.phenny.say("Stay. Dealers finishing hand: " + str(p.players[0].hand))
+            self.phenny.say("Stay. Dealers finishing hand: " + str(p.players[0].hand[0]))
             self.calc_winners()
 
     def calc_winners(self):
         self.phenny.say("Results for remaining players:")
         self.show_full_table()
-        dealer_value = p.players[0].hand.hand_value()
+        dealer_value = p.players[0].hand[0].hand_value()
 
         for uid in p.in_game[:]:
-            player_value = p.players[uid].hand.hand_value()
+            player_value = p.players[uid].hand[0].hand_value()
             if dealer_value > player_value or player_value > 21:
                 self.phenny.say("Dealer's hand beat %s's hand by %d points." % (p.players[uid].name, dealer_value - player_value))
                 p.players[uid].lose(self.phenny)
@@ -344,7 +368,8 @@ class Game:
         for uid in p.players:
             p.players[uid].bet = 0
             p.players[uid].in_game = False
-            p.players[uid].hand.empty_hand()
+            for hand in p.players[uid].hand:
+                hand.empty_hand()
         self.phenny.say("Game Over!")
         del self
 
