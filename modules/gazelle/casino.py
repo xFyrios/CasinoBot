@@ -75,17 +75,8 @@ def buy(phenny, input):
     amount = args[0]
     if amount.isdigit():
         join_casino(input)
-        #Ask the site for gold
-        success = phenny.callGazelleApi({'uid': input.uid, 'amount': amount, 'action': 'buyGold'})
-        if success == False or success['status'] == "error":
-            if success['error'] != 'Invalid Form Data' and success['error'] != 'error':
-                phenny.write(('NOTICE', input.nick + " " + success['error']))  # NOTICE
-            else:
-                phenny.write(('NOTICE', input.nick + " An unknown error occurred."))  # NOTICE
-            return False
-        else:
-            p.players[input.uid].add_gold(phenny, amount)
-            phenny.write(('NOTICE', input.nick + " You bought " + str(amount) + " gold worth of chips."))  # NOTICE
+        p.players[input.uid].add_gold(phenny, amount)
+        phenny.write(('NOTICE', input.nick + " You bought " + str(amount) + " gold worth of chips."))  # NOTICE
     else:
         phenny.write(('NOTICE', input.nick + " You can only buy in with a positive, non-decimal amount of gold. Ex. !buy 100"))  # NOTICE
 buy.commands = ['buy']
@@ -100,11 +91,7 @@ def sell(phenny, input):
         if input.mod:
             for uid in p.players.keys():
                 if p.players[uid].gold > 0:
-                    success = phenny.callGazelleApi({'uid': uid, 'amount': p.players[uid].gold, 'action': 'sellGold'})
-                    if success == False or success['status'] == "error":
-                        phenny.write(('NOTICE', input.nick + " An unknown error occurred. Could not sell " + p.players[uid].name + "'s gold."))  # NOTICE
-                    else:
-                        p.players[uid].remove_gold(p.players[uid].gold)
+                    p.players[uid].remove_gold(p.players[uid].gold)
             phenny.say("Forced all users to sell out.")
         else:
             phenny.say("You do not have permission to use this command.")
@@ -112,24 +99,16 @@ def sell(phenny, input):
     elif args[0] == "all":
         if input.uid in p.players.keys():
             amount = p.players[input.uid].gold
-            success = phenny.callGazelleApi({'uid': input.uid, 'amount': amount, 'action': 'sellGold'})
-            if success == False or success['status'] == "error":
-                phenny.write(('NOTICE', input.nick + " An unknown error occurred."))  # NOTICE
-            else:
-                p.players[input.uid].remove_gold(amount)
-                phenny.write(('NOTICE', input.nick + " You sold " + str(amount) + " gold worth of chips."))  # NOTICE
+            p.players[input.uid].remove_gold(amount)
+            phenny.write(('NOTICE', input.nick + " You sold " + str(amount) + " gold worth of chips."))  # NOTICE
 
     else:
         amount = args[0]
         if amount.isdigit() and int(amount) > 0 and input.uid in p.players.keys():
             if int(amount) > p.players[input.uid].gold:
                 amount = p.players[input.uid].gold
-            success = phenny.callGazelleApi({'uid': input.uid, 'amount': amount, 'action': 'sellGold'})
-            if success == False or success['status'] == "error":
-                phenny.write(('NOTICE', input.nick + " An unknown error occurred."))  # NOTICE
-            else:
-                p.players[input.uid].remove_gold(amount)
-                phenny.write(('NOTICE', input.nick + " You sold " + str(amount) + " gold worth of chips."))  # NOTICE
+            p.players[input.uid].remove_gold(amount)
+            phenny.write(('NOTICE', input.nick + " You sold " + str(amount) + " gold worth of chips."))  # NOTICE
         else:
             phenny.write(('NOTICE', input.nick + " You can only cash out with a positive, non-decimal amount of gold. Ex. !sell 100"))  # NOTICE
 sell.commands = ['sell']
@@ -157,7 +136,7 @@ def player(phenny, input):
         uid = args[0]
     else:
         uid = p.name_to_uid(args[0])
-    
+
     if uid is None or uid not in p.players.keys():
         phenny.say("That user does not exist. Try !players to view all registered players.")
     else:
@@ -292,11 +271,11 @@ bets.priority = 'low'
 def hand(phenny, input):
     if in_play and input.uid in p.in_game:
         phenny.write(('NOTICE', " Your Hand: %s" % p.players[input.uid].hand))
-    
+
 
 ####################
 # HELPER FUNCTIONS #
-#################### 
+####################
 
 # Join the player to the players list
 def join_casino(input):
