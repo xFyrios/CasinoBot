@@ -221,9 +221,22 @@ class Game:
 
             if len(self.turns) > 0 and self.turns[0] == uid: # This players next move
                 self.accept_surrender = False
-                self.accept_doubledown[handid] = False
                 self.hand(uid)
-                self.phenny.say("Hit. %s. !Stand or !Hit?" % p.players[uid].name)
+                i = 0
+                for hand in p.players[uid].hand:
+                    self.set_doubledown(uid, i)
+                    self.set_split(uid, i)
+
+                    doubledown = ''
+                    split = ''
+                    if self.accept_doubledown[handid]:
+                        doubledown = ", !DoubleDown %s" %(i+1)
+                    if self.accept_split[handid]:
+                        split = ", !Split %i" %(i+1)
+
+                    choices = "Hand %s: !Stand %s, !Hit %s%s%s" %(i+1, i+1, i+1, doubledown, split)
+                    self.phenny.say(choices)
+                    i += 1
                 self.t = Timer(30.0, self.stand, [uid, True])
                 self.t.start()
             elif len(p.in_game) == 0:
@@ -253,7 +266,7 @@ class Game:
 
             # Check if the hand to split is a pair of aces
             # Hitting/resplitting split aces is forbidden
-            self.split_aces = p.players[uid].hand[0].card_rank(0) == p.players[uid].hand[0].card_rank(1) == 'A'
+            self.split_aces = p.players[uid].hand[handid].card_rank(0) == p.players[uid].hand[handid].card_rank(1) == 'A'
 
             newid = p.players[uid].add_hand()
             self.accept_split.append(False)
