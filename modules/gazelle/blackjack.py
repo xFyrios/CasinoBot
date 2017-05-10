@@ -13,6 +13,11 @@ def stand(phenny, input):
         casino.game.stand(input.uid)
 stand.commands = ['stand', 'Stand', 'stay', 'Stay', 's']
 
+def split(phenny, input):
+    if casino.game:
+        casino.game.split(input.uid)
+split.commands = ['split', 'Split', 'sp']
+
 def surrender(phenny, input):
     if casino.game:
         casino.game.surrender(input.uid)

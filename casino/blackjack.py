@@ -9,9 +9,10 @@ from collections import OrderedDict
 
 DELAY_TIME = 30.0
 
-arguments = {'hit': 0, 'stand': 0, 'stay': 0, 'surrender': 0, 'doubledown': 0, 'double': 0}
+arguments = {'hit': 0, 'stand': 0, 'stay': 0, 'split': 0,'surrender': 0, 'doubledown': 0, 'double': 0}
 help = OrderedDict([('hit', "To tell the dealer to give you another card, use the command '!hit'."),
                     ('stand', "To tell the dealer to not give you anymore cards, use the command '!stand'."),
+                    ('split', "To split your deck, use the command '!split'.")
                     ('surrender', "To surrender and give up half of your bet, use the command '!surrender'."),
                     ('doubledown', "To double your bet use the command '!doubledown'. This only works if your "
                                     "hand value is 9, 10, or 11 and it is your first turn. After you will hit once then stand.")])
@@ -60,7 +61,7 @@ class Game:
         self.timer_start = time.time()
         self.t.start()
 
-    def join(self, uid): 
+    def join(self, uid):
         if len(p.in_game) < 6 and uid not in p.in_game:
             msg = p.add_to_game(self.phenny, uid)
             # Add the hand_value function
@@ -225,7 +226,7 @@ class Game:
             if self.t and self.t.is_alive():
                 self.t.cancel()
                 self.t = False
-        
+
             bet = p.players[uid].bet
             p.players[0].add_gold(self.phenny, bet/2)
             p.players[uid].bet = 0
@@ -243,13 +244,13 @@ class Game:
 
             p.players[uid].hand.add_card(self.deck.deal_card())
             self.phenny.say("Hit. %s: %s" % (p.players[uid].name, str(p.players[uid].hand)))
-            
+
             if p.players[uid].hand.hand_value() > 21:
                 p.players[uid].lose(self.phenny)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
                 self.next_player()
             else:
-                self.stand(uid) 
+                self.stand(uid)
 
     def set_doubledown(self, uid):
         if p.players[uid].hand.hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet):
