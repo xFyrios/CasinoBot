@@ -42,9 +42,9 @@ class Game:
         self.deck = False
         self.accept_bets = False
         self.accept_surrender = False
-        self.accept_doubledown = False
-        self.accept_split = False
-        self.accept_hit = False
+        self.accept_doubledown = [False]
+        self.accept_split = [False]
+        self.split_aces = False
         self.t = False  # Used for the delay timer so that we can reset it from the !join command
         self.timer_start = 0  # Used for calculating whether or not we should reset the timer on !join
         self.starter_uid = False
@@ -213,14 +213,16 @@ class Game:
                 self.t = False
 
             if p.players[uid].hand[handid].hand_value() > 21:
-                p.players[uid].lose(self.phenny)
+                p.players[uid].lose(self.phenny, handid)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
+
+            if p.players[uid].count_hands() == 0:
                 del self.turns[0]
 
             if len(self.turns) > 0 and self.turns[0] == uid: # This players next move
                 self.accept_surrender = False
-                self.accept_doubledown = False
-                self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand[handid])))   # NOTICE
+                self.accept_doubledown[handid] = False
+                self.hand(uid)
                 self.phenny.say("Hit. %s. !Stand or !Hit?" % p.players[uid].name)
                 self.t = Timer(30.0, self.stand, [uid, True])
                 self.t.start()
@@ -244,20 +246,68 @@ class Game:
             self.next_player()
 
     def split(self, uid, handid=0):
-        if self.accept_split and self.turns and self.turns[0] == uid:
+        if self.accept_split[handid] and self.turns and self.turns[0] == uid:
             del self.turns[0]
 
             if self.t and self.t.is_alive():
                 self.t.cancel()
                 self.t = False
 
+            # Check if the hand to split is a pair of aces
+            # Hitting/resplitting split aces is forbidden
+            oriHand = p.players[uid].hand[0]
+            self.split_aces = oriHand[0] == oriHand[3] == 'A'
+
             newid = p.players[uid].add_hand()
             p.players[uid].hand[newid].add_card(p.players[uid].hand[handid].remove_card(handid))
             p.players[uid].hand[newid].add_card(self.deck.deal_card())
             p.players[uid].hand[handid].add_card(self.deck.deal_card())
 
-            self.phenny.say("Split. %s: Hand 1 %s - Hand 2 %s" % (p.players[uid].name, str(p.players[uid].hand[handid]), str(p.players[uid].hand[newid])))
+            bet = p.players[uid].bet/p.players[uid].num_hands
+            self.phenny.say(p.players[uid].place_bet(bet))
 
+            hands = 'Split. %s: ' %p.players[uid].name
+            i = 0
+            for hand in p.players[uid].hand:
+                hands += "Hand %s " %(i+1) + str(hand)
+                i += 1
+
+            self.phenny.say(hand)
+
+            self.accept_surrender = False
+
+            for i in range(0, len(p.players[uid].hand)):
+                if p.players[uid].hand[i].hand_value() > 21:
+                    p.players[uid].lose(self.phenny, i)
+                    self.phenny.say("BUST! %s's hand %s went over 21. Their bet was lost to the dealer." % (p.players[uid].name,i))
+
+            if self.split_aces or p.players[uid].count_hands() == 0:
+                self.split_aces = False
+                del self.turns[0]
+
+            if len(p.in_game()) == 0:
+                self.show_full_table()
+                self.game_over()  # All players lost, end the game
+            elif len(self.turns) > 0 and self.turns[0] == uid:
+                i = 0
+                for hand in p.players[uid].hand:
+                    self.set_doubledown(uid, i)
+                    self.set_split(uid, i)
+
+                    doubledown = ''
+                    split = ''
+                    if accept_doubledown[handid]:
+                        doubledown = ", !DoubleDown %s" %(i+1)
+                    if accept_split[handid]:
+                        split = ", !Split %i" %(i+1)
+
+                    choices = "Hand %s: !Stand %s, !Hit %s%s%s" %(i+1, i+1, i+1, doubledown, split)
+                    self.phenny.say(choices)
+                    i += 1
+                self.t = Timer(30.0, self.stand, [uid, True])
+                self.t.start()
+            else:
+                self.next_player()
 
 
     def surrender(self, uid):
@@ -279,37 +329,49 @@ class Game:
             self.next_player()
 
     def doubledown(self, uid, handid=0):
-        if self.accept_doubledown and self.turns and self.turns[0] == uid:
-            bet = p.players[uid].bet
+        if self.accept_doubledown[handid] and self.turns and self.turns[0] == uid:
+            bet = p.players[uid].bet/p.players[uid].num_hands
             self.phenny.say(p.players[uid].place_bet(bet))
 
             p.players[uid].hand[handid].add_card(self.deck.deal_card())
             self.phenny.say("Hit. %s: %s" % (p.players[uid].name, str(p.players[uid].hand[handid])))
 
             if p.players[uid].hand[handid].hand_value() > 21:
-                p.players[uid].lose(self.phenny)
+                p.players[uid].lose(self.phenny, handid)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
+
+            if p.players[uid].count_hands() == 0:
+                del self.turns[0]
                 self.next_player()
+            elif len(p.in_game()) == 0:
+                self.show_full_table()
+                self.game_over()  # All players lost, end the game
             else:
                 self.stand(uid)
 
     def set_doubledown(self, uid, handid=0):
-        if p.players[uid].hand[handid].hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet):
+        if p.players[uid].hand[handid].hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet/p.players[uid].num_hands):
             # We allow double downs when hand value is 9,10, or 11 and the player has enough gold to double their bet
-            self.accept_doubledown = True
+            self.accept_doubledown[handid] = True
 
     def set_split(self,uid, handid=0):
-        if p.players[uid].hand[handid].card_count() == 2 and int(p.players[uid].gold) >= int(p.players[uid].bet):
-            self.accept_split = p.players[uid].hand[handid].has_pair()
+        if p.players[uid].hand[handid].card_count() == 2 and int(p.players[uid].gold) >= int(p.players[uid].bet/p.players[uid].num_hands):
+            self.accept_split[handid] = p.players[uid].hand[handid].has_pair()
 
     def next_player(self):
         if len(self.turns) > 0:
             uid = self.turns[0]
             self.accept_surrender = True
             self.set_doubledown(uid)
+            self.set_split(uid)
             self.hand(uid)   # NOTICE
-            if self.accept_doubledown:
+
+            if self.accept_doubledown and self.accept_split:
+            self.phenny.say("%s. !Stand, !Hit, !Surrender, !Split or !DoubleDown?" % p.players[uid].name)
+            elif self.accept_doubledown:
                 self.phenny.say("%s. !Stand, !Hit, !Surrender, or !DoubleDown?" % p.players[uid].name)
+            elif self.accept_split:
+                self.phenny.say("%s. !Stand, !Hit, !Surrender, or !Split?" % p.players[uid].name)
             else:
                 self.phenny.say("%s. !Stand, !Hit, or !Surrender?" % p.players[uid].name)
             self.t = Timer(30.0, self.stand, [uid, True])
@@ -317,6 +379,7 @@ class Game:
         else:
             self.accept_surrender = False
             self.accept_doubledown = False
+            self.accept_split = False
             self.dealer_play() # All turns complete, dealer plays
 
     def hand(self, uid):

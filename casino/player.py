@@ -30,6 +30,9 @@ class Player:
         self.hand.append(cards.Hand())
         return len(self.hand) - 1
 
+    def count_hands(self):
+        return len(self.hand)
+
     def join_game(self):
         self.in_game = True
 
@@ -107,7 +110,7 @@ class Player:
         phenny.write(('NOTICE', self.name + " You won " + str(winnings) + " gold!"))  # NOTICE
         return "%s beat the dealer! They won %d gold! They now have %d gold." % (self.name, winnings, self.gold)
 
-    def lose(self, phenny):
+    def lose(self, phenny, handid=0):
         self.losses += 1
         dbuid = str(self.uid)
         db = shelve.open('casino.db')
@@ -120,7 +123,9 @@ class Player:
         players[0].add_gold(phenny, self.bet)
         bet = self.bet
         self.bet = 0
-        remove_from_game(self.uid)
+        self.hand.pop(handid)
+        if self.count_hands() == 0
+            remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " You lost your bet of " + str(bet) + " to the dealer. You have " + str(self.gold) + " left."))  # NOTICE
 
     def tie(self, phenny):
