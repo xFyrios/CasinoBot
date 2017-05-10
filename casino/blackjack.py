@@ -7,7 +7,7 @@ from threading import Timer
 from types import MethodType
 from collections import OrderedDict
 
-DELAY_TIME = 2.0
+DELAY_TIME = 30.0
 
 arguments = {'hit': 0, 'stand': 0, 'stay': 0, 'split': 0,'surrender': 0, 'doubledown': 0, 'double': 0}
 help = OrderedDict([('hit', "To tell the dealer to give you another card, use the command '!hit'."),
@@ -201,7 +201,7 @@ class Game:
             self.phenny.say("%s. !Stand, !Hit, !Surrender, or !Split?" % p.players[uid].name)
         else:
             self.phenny.say("%s. !Stand, !Hit, or !Surrender?" % p.players[uid].name)
-        self.t = Timer(DELAY_TIME, self.stand, [uid, True])
+        self.t = Timer(30.0, self.stand, [uid, True])
         self.t.start()
 
     def hit(self, uid, handid=0):
@@ -222,7 +222,7 @@ class Game:
                 self.accept_doubledown = False
                 self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand[handid])))   # NOTICE
                 self.phenny.say("Hit. %s. !Stand or !Hit?" % p.players[uid].name)
-                self.t = Timer(DELAY_TIME, self.stand, [uid, True])
+                self.t = Timer(30.0, self.stand, [uid, True])
                 self.t.start()
             elif len(p.in_game) == 0:
                 self.show_full_table()
@@ -313,7 +313,7 @@ class Game:
                 self.phenny.say("%s. !Stand, !Hit, !Surrender, or !DoubleDown?" % p.players[uid].name)
             else:
                 self.phenny.say("%s. !Stand, !Hit, or !Surrender?" % p.players[uid].name)
-            self.t = Timer(DELAY_TIME, self.stand, [uid, True])
+            self.t = Timer(30.0, self.stand, [uid, True])
             self.t.start()
         else:
             self.accept_surrender = False
