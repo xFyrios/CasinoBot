@@ -258,6 +258,7 @@ class Game:
             self.split_aces = p.players[uid].hand[0].card_rank(0) == p.players[uid].hand[0].card_rank(1) == 'A'
 
             newid = p.players[uid].add_hand()
+            p.players[uid].hand[newid].hand_value = MethodType(hand_value, p.players[uid].hand[newid])
             p.players[uid].hand[newid].add_card(p.players[uid].hand[handid].remove_card(handid))
             p.players[uid].hand[newid].add_card(self.deck.deal_card())
             p.players[uid].hand[handid].add_card(self.deck.deal_card())
