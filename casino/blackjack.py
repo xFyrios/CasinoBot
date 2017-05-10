@@ -263,7 +263,7 @@ class Game:
             p.players[uid].hand[newid].add_card(self.deck.deal_card())
             p.players[uid].hand[handid].add_card(self.deck.deal_card())
 
-            bet = p.players[uid].bet/p.players[uid].num_hands
+            bet = p.players[uid].bet/p.players[uid].count_hands()
             self.phenny.say(p.players[uid].place_bet(bet))
 
             hands = 'Split. %s: ' %p.players[uid].name
@@ -330,7 +330,7 @@ class Game:
 
     def doubledown(self, uid, handid=0):
         if self.accept_doubledown[handid] and self.turns and self.turns[0] == uid:
-            bet = p.players[uid].bet/p.players[uid].num_hands
+            bet = p.players[uid].bet/p.players[uid].count_hands()
             self.phenny.say(p.players[uid].place_bet(bet))
 
             p.players[uid].hand[handid].add_card(self.deck.deal_card())
@@ -350,12 +350,12 @@ class Game:
                 self.stand(uid)
 
     def set_doubledown(self, uid, handid=0):
-        if p.players[uid].hand[handid].hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet/p.players[uid].num_hands):
+        if p.players[uid].hand[handid].hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet/p.players[uid].count_hands()):
             # We allow double downs when hand value is 9,10, or 11 and the player has enough gold to double their bet
             self.accept_doubledown[handid] = True
 
     def set_split(self,uid, handid=0):
-        if p.players[uid].hand[handid].card_count() == 2 and int(p.players[uid].gold) >= int(p.players[uid].bet/p.players[uid].num_hands):
+        if p.players[uid].hand[handid].card_count() == 2 and int(p.players[uid].gold) >= int(p.players[uid].bet/p.players[uid].count_hands()):
             self.accept_split[handid] = p.players[uid].hand[handid].has_pair()
 
     def next_player(self):
