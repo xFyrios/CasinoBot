@@ -98,7 +98,7 @@ class Game:
         # Place bets
         self.phenny.say("Time to place your initial bets! You have 30 seconds. Use '!bet amount' to bet. You can place multiple bets.")
         self.accept_bets = True
-        self.t = Timer(30.0, self.deal_cards)
+        self.t = Timer(DELAY_TIME, self.deal_cards)
         self.t.start()
 
     def deal_cards(self):
@@ -201,7 +201,7 @@ class Game:
             self.phenny.say("%s. !Stand, !Hit, !Surrender, or !Split?" % p.players[uid].name)
         else:
             self.phenny.say("%s. !Stand, !Hit, or !Surrender?" % p.players[uid].name)
-        self.t = Timer(30.0, self.stand, [uid, True])
+        self.t = Timer(DELAY_TIME, self.stand, [uid, True])
         self.t.start()
 
     def hit(self, uid, handid=0):
@@ -222,7 +222,7 @@ class Game:
                 self.accept_doubledown = False
                 self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand[handid])))   # NOTICE
                 self.phenny.say("Hit. %s. !Stand or !Hit?" % p.players[uid].name)
-                self.t = Timer(30.0, self.stand, [uid, True])
+                self.t = Timer(DELAY_TIME, self.stand, [uid, True])
                 self.t.start()
             elif len(p.in_game) == 0:
                 self.show_full_table()
@@ -313,7 +313,7 @@ class Game:
                 self.phenny.say("%s. !Stand, !Hit, !Surrender, or !DoubleDown?" % p.players[uid].name)
             else:
                 self.phenny.say("%s. !Stand, !Hit, or !Surrender?" % p.players[uid].name)
-            self.t = Timer(30.0, self.stand, [uid, True])
+            self.t = Timer(DELAY_TIME, self.stand, [uid, True])
             self.t.start()
         else:
             self.accept_surrender = False
