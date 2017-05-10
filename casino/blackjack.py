@@ -113,7 +113,7 @@ class Game:
 
         # Deal the cards to the players
         self.phenny.say("The Dealer begins dealing...")
-        p.deal(self.deck, 0, 2)
+        p.deal(self.deck, 2)
 
         # Show cards
         for uid in p.in_game:

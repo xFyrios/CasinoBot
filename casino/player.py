@@ -209,13 +209,13 @@ def list_in_game():
     return "Players In-Game: %s" % player_names[:-2]
 
 
-def deal(deck, handid, amount):
+def deal(deck, amount, handid=0):
     while amount > 0:
         for uid in players:
             players[uid].hand[handid].add_card(deck.deal_card())
         amount -= 1
 
-def deal_cards(handid, cards, uid):
+def deal_cards(cards, uid, handid=0):
     for c in cards:
         players[uid].hand[handid].add_card(c)
 
