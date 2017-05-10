@@ -149,7 +149,7 @@ class Game:
             if len(p.players[uid].hand) > 1:
                 hands = ''
                 i = 1
-                for hand in p.players[uid].hand
+                for hand in p.players[uid].hand:
                     hands += "Hand %s " %i + str(hand)
                     i += 1
             else:
@@ -165,7 +165,7 @@ class Game:
             if len(p.players[uid].hand) > 1:
                 hands = ''
                 i = 1
-                for hand in p.players[uid].hand
+                for hand in p.players[uid].hand:
                     hands += "Hand %s " %i + str(hand)
                     i += 1
             else:
@@ -195,9 +195,9 @@ class Game:
 
         if self.accept_doubledown and self.accept_split:
             self.phenny.say("%s. !Stand, !Hit, !Surrender, !Split or !DoubleDown?" % p.players[uid].name)
-        else if self.accept_doubledown:
+        elif self.accept_doubledown:
             self.phenny.say("%s. !Stand, !Hit, !Surrender, or !DoubleDown?" % p.players[uid].name)
-        else if self.accept_split:
+        elif self.accept_split:
             self.phenny.say("%s. !Stand, !Hit, !Surrender, or !Split?" % p.players[uid].name)
         else:
             self.phenny.say("%s. !Stand, !Hit, or !Surrender?" % p.players[uid].name)
@@ -293,7 +293,7 @@ class Game:
             self.accept_doubledown = True
 
     def set_split(self,uid, handid=0):
-        if int(p.players[uids].gold) >= int(p.players[uid].bet):
+        if int(p.players[uid].gold) >= int(p.players[uid].bet):
             self.accept_split = p.players[uid].hand[handid].has_pair()
 
     def next_player(self):
@@ -318,7 +318,7 @@ class Game:
             if len(p.players[uid].hand) > 1:
                 hands = 'Your Hands: '
                 i = 1
-                for hand in p.players[uid].hand
+                for hand in p.players[uid].hand:
                     hands += "Hand %s " %i + str(hand)
                     i += 1
             else:
