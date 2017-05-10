@@ -255,8 +255,7 @@ class Game:
 
             # Check if the hand to split is a pair of aces
             # Hitting/resplitting split aces is forbidden
-            oriHand = p.players[uid].hand[0]
-            self.split_aces = oriHand[0] == oriHand[3] == 'A'
+            self.split_aces = p.players[uid].hand[0].card_rank(0) == p.players[uid].hand[0].card_rank(1) == 'A'
 
             newid = p.players[uid].add_hand()
             p.players[uid].hand[newid].add_card(p.players[uid].hand[handid].remove_card(handid))
