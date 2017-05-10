@@ -26,6 +26,17 @@ class Player:
             string += "  Bet: %d" % self.bet
         return string
 
+    def add_hand(self):
+        self.hand.append(cards.Hand())
+        return len(self.hand) - 1
+
+    def add_cards(self, cards, handid=0):
+        for c in cards:
+            self.hand[handid].add_card(c)
+
+    def remove_card(self, handid=0):
+        return self.hand[handid].pop()
+
     def join_game(self):
         self.in_game = True
 
@@ -214,10 +225,6 @@ def deal(deck, amount, handid=0):
         for uid in players:
             players[uid].hand[handid].add_card(deck.deal_card())
         amount -= 1
-
-def deal_cards(cards, uid, handid=0):
-    for c in cards:
-        players[uid].hand[handid].add_card(c)
 
 if __name__ == '__main__':
     print(__doc__)

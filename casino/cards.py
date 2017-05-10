@@ -67,6 +67,9 @@ class Hand:
     def has_pair(self):
         return len(self.cards) != len(set(self.cards))
 
+    def card_count(self):
+        return len(self.cards)
+
     def get_value(self):
         # Count ace's as 1 by default, can override this in the various games
         value = 0

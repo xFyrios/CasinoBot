@@ -243,7 +243,7 @@ class Game:
 
             self.next_player()
 
-    def split(self, uid):
+    def split(self, uid, handid=0):
         if self.accept_split and self.turns and self.turns[0] == uid:
             del self.turns[0]
 
@@ -251,6 +251,13 @@ class Game:
                 self.t.cancel()
                 self.t = False
 
+            newid = p.players[uid].add_hand()
+            p.players[uid].add_cards(p.players[uid].remove_card(handid), newid)
+
+            p.players[uid].hand[handid].add_card(self.deck.deal_card())
+            p.players[uid].hand[newid].add_card(self.deck.deal_card())
+
+            self.phenny.say("Split. %s: Hand 1 %s - Hand 2 %s" % (p.players[uid].name, str(p.players[uid].hand[handid]), str(p.players[uid].hand[newid])))
 
 
 
@@ -293,7 +300,7 @@ class Game:
             self.accept_doubledown = True
 
     def set_split(self,uid, handid=0):
-        if int(p.players[uid].gold) >= int(p.players[uid].bet):
+        if p.players.hand[handid].card_count() == 2 and int(p.players[uid].gold) >= int(p.players[uid].bet):
             self.accept_split = p.players[uid].hand[handid].has_pair()
 
     def next_player(self):
