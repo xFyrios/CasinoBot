@@ -300,7 +300,7 @@ class Game:
             self.accept_doubledown = True
 
     def set_split(self,uid, handid=0):
-        if p.players.hand[handid].card_count() == 2 and int(p.players[uid].gold) >= int(p.players[uid].bet):
+        if p.players[uid].hand[handid].card_count() == 2 and int(p.players[uid].gold) >= int(p.players[uid].bet):
             self.accept_split = p.players[uid].hand[handid].has_pair()
 
     def next_player(self):
