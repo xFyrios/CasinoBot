@@ -61,6 +61,9 @@ class Hand:
     def add_card(self, card):
         self.cards.append(card)
 
+    def remove_card(self, handid=0):
+        return self.cards.pop()
+
     def empty_hand(self):
         del self.cards[:]
 

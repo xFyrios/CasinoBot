@@ -252,10 +252,9 @@ class Game:
                 self.t = False
 
             newid = p.players[uid].add_hand()
-            p.players[uid].add_cards(p.players[uid].remove_card(handid), newid)
-
-            p.players[uid].hand[handid].add_card(self.deck.deal_card())
+            p.players[uid].hand[newid].add_card(p.players[uid].hand[handid].remove_card(handid))
             p.players[uid].hand[newid].add_card(self.deck.deal_card())
+            p.players[uid].hand[handid].add_card(self.deck.deal_card())
 
             self.phenny.say("Split. %s: Hand 1 %s - Hand 2 %s" % (p.players[uid].name, str(p.players[uid].hand[handid]), str(p.players[uid].hand[newid])))
 

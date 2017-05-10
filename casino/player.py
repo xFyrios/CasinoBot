@@ -30,13 +30,6 @@ class Player:
         self.hand.append(cards.Hand())
         return len(self.hand) - 1
 
-    def add_cards(self, cards, handid=0):
-        for c in cards:
-            self.hand[handid].add_card(c)
-
-    def remove_card(self, handid=0):
-        return self.hand[handid].pop()
-
     def join_game(self):
         self.in_game = True
 
