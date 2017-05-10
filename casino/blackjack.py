@@ -271,7 +271,7 @@ class Game:
                 hands += "Hand %s " %(i+1) + str(hand)
                 i += 1
 
-            self.phenny.say(hand)
+            self.phenny.say(hands)
 
             self.accept_surrender = False
 
