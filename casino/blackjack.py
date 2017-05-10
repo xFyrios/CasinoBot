@@ -367,7 +367,7 @@ class Game:
             self.hand(uid)   # NOTICE
 
             if self.accept_doubledown and self.accept_split:
-            self.phenny.say("%s. !Stand, !Hit, !Surrender, !Split or !DoubleDown?" % p.players[uid].name)
+                self.phenny.say("%s. !Stand, !Hit, !Surrender, !Split or !DoubleDown?" % p.players[uid].name)
             elif self.accept_doubledown:
                 self.phenny.say("%s. !Stand, !Hit, !Surrender, or !DoubleDown?" % p.players[uid].name)
             elif self.accept_split:

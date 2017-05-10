@@ -124,7 +124,7 @@ class Player:
         bet = self.bet
         self.bet = 0
         self.hand.pop(handid)
-        if self.count_hands() == 0
+        if self.count_hands() == 0:
             remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " You lost your bet of " + str(bet) + " to the dealer. You have " + str(self.gold) + " left."))  # NOTICE
 
