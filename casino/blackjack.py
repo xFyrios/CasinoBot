@@ -247,8 +247,6 @@ class Game:
 
     def split(self, uid, handid=0):
         if self.accept_split[handid] and self.turns and self.turns[0] == uid:
-            del self.turns[0]
-
             if self.t and self.t.is_alive():
                 self.t.cancel()
                 self.t = False
