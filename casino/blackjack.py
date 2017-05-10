@@ -294,9 +294,9 @@ class Game:
 
                     doubledown = ''
                     split = ''
-                    if accept_doubledown[handid]:
+                    if self.accept_doubledown[handid]:
                         doubledown = ", !DoubleDown %s" %(i+1)
-                    if accept_split[handid]:
+                    if self.accept_split[handid]:
                         split = ", !Split %i" %(i+1)
 
                     choices = "Hand %s: !Stand %s, !Hit %s%s%s" %(i+1, i+1, i+1, doubledown, split)
