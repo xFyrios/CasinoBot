@@ -175,8 +175,14 @@ class Game:
         uid = self.turns[0]
         self.accept_surrender = True
         self.set_doubledown(uid)
-        if self.accept_doubledown:
+        self.set_split(uid)
+
+        if self.accept_doubledown and self.accept_split:
+            self.phenny.say("%s. !Stand, !Hit, !Surrender, !Split or !DoubleDown?" % p.players[uid].name)
+        else if self.accept_doubledown:
             self.phenny.say("%s. !Stand, !Hit, !Surrender, or !DoubleDown?" % p.players[uid].name)
+        else if self.accept_split:
+            self.phenny.say("%s. !Stand, !Hit, !Surrender, or !Split?" % p.players[uid].name)
         else:
             self.phenny.say("%s. !Stand, !Hit, or !Surrender?" % p.players[uid].name)
         self.t = Timer(30.0, self.stand, [uid, True])
@@ -231,6 +237,7 @@ class Game:
 
 
 
+
     def surrender(self, uid):
         if self.accept_surrender and self.turns and self.turns[0] == uid:
             del self.turns[0]
@@ -268,6 +275,10 @@ class Game:
         if p.players[uid].hand.hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet):
             # We allow double downs when hand value is 9,10, or 11 and the player has enough gold to double their bet
             self.accept_doubledown = True
+
+    def set_split(self,uid):
+        if int(p.players[uids].gold) >= int(p.players[uid].bet):
+            self.accept_split = p.players[uid].hand.has_pair()
 
     def next_player(self):
         if len(self.turns) > 0:
