@@ -7,7 +7,7 @@ from threading import Timer
 from types import MethodType
 from collections import OrderedDict
 
-DELAY_TIME = 30.0
+DELAY_TIME = 2.0
 
 arguments = {'hit': 0, 'stand': 0, 'stay': 0, 'split': 0,'surrender': 0, 'doubledown': 0, 'double': 0}
 help = OrderedDict([('hit', "To tell the dealer to give you another card, use the command '!hit'."),
