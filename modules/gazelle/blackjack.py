@@ -4,11 +4,12 @@ import casino
 
 def hit(phenny, input):
     if casino.game:
-        handid = input.group(2)
-        if not handid:
+        args = casino.check_args(phenny, input.group(0))
+        if not args:
             casino.game.hit(input.uid)
 
-        if handid.isdigit():
+        if args[0].isdigit():
+            handid = int(args[0])
             casino.game.hit(input.uid, handid)
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !hit 1"))
@@ -17,11 +18,12 @@ hit.priority = 'high'
 
 def stand(phenny, input):
     if casino.game:
-        handid = input.group(2)
-        if not handid:
+        args = casino.check_args(phenny, input.group(0))
+        if not args:
             casino.game.stand(input.uid)
 
-        if handid.isdigit():
+        if args[0].isdigit():
+            handid = int(args[0])
             casino.game.stand(input.uid, handid)
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !stand 1"))
@@ -29,11 +31,12 @@ stand.commands = ['stand', 'Stand', 'stay', 'Stay', 's']
 
 def split(phenny, input):
     if casino.game:
-        handid = input.group(2)
-        if not handid:
+        args = casino.check_args(phenny, input.group(0))
+        if not args:
             casino.game.split(input.uid)
 
-        if handid.isdigit():
+        if args[0].isdigit():
+            handid = int(args[0])
             casino.game.split(input.uid, handid)
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !split 1"))
@@ -46,11 +49,12 @@ surrender.commands = ['surrender', 'Surrender']
 
 def doubledown(phenny, input):
     if casino.game:
-        handid = input.group(2)
-        if not handid:
+        args = casino.check_args(phenny, input.group(0))
+        if not args:
             casino.game.doubledown(input.uid)
 
-        if handid.isdigit():
+        if args[0].isdigit():
+            handid = int(args[0])
             casino.game.doubledown(input.uid, handid)
         else:
             phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !doubledown 1"))
