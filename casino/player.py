@@ -31,7 +31,7 @@ class Player:
     def leave_game(self):
         self.in_game = False
 
-    def add_gold(self, phenny, gold):
+    def add_gold(self, gold):
         self.gold += int(gold)
         if self.uid != 0:
             db = shelve.open('casino.db')
@@ -79,13 +79,13 @@ class Player:
         finally:
             db.close()
         winnings = self.bet * 1.5
-        self.add_gold(phenny, winnings + self.bet)
+        self.add_gold(winnings + self.bet)
         self.bet = 0
         remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " You won " + str(winnings) + " gold!"))  # NOTICE
         return "%s has a natural blackjack! They won %d gold (1.5x bet)! They now have %d gold." % (self.name, winnings, self.gold)
 
-    def win(self, phenny):
+    def win(self, phenny, amount):
         self.wins += 1
         dbuid = str(self.uid)
         db = shelve.open('casino.db')
@@ -95,8 +95,8 @@ class Player:
             db[dbuid] = p
         finally:
             db.close()
-        winnings = self.bet
-        self.add_gold(phenny, winnings + self.bet)
+        self.add_gold(amount)
+        winnings = amount - self.bet
         self.bet = 0
         remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " You won " + str(winnings) + " gold!"))  # NOTICE
@@ -112,14 +112,15 @@ class Player:
             db[dbuid] = p
         finally:
             db.close()
-        players[0].add_gold(phenny, self.bet)
+        if 0 in players:
+            players[0].add_gold(self.bet)
         bet = self.bet
         self.bet = 0
         remove_from_game(self.uid)
-        phenny.write(('NOTICE', self.name + " You lost your bet of " + str(bet) + " to the dealer. You have " + str(self.gold) + " left."))  # NOTICE
+        phenny.write(('NOTICE', self.name + " You lost your bet of " + str(bet) + " gold. You have " + str(self.gold) + " left."))  # NOTICE
 
     def tie(self, phenny):
-        self.add_gold(phenny, self.bet)
+        self.add_gold(self.bet)
         self.bet = 0
         remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " Your bet was returned to you."))  # NOTICE
@@ -147,17 +148,7 @@ def add_player(uid, nick):
 
 
 def remove_player(uid):
-    if players[uid].gold > 0:
-        players[uid].remove_gold(players[uid].gold)
     del players[uid]
-
-    if uid != 0:
-        dbuid = str(uid)
-        db = shelve.open('casino.db')
-        try:
-            del db[dbuid]
-        finally:
-            db.close()
 
 def name_to_uid(name):
     for uid in players:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import blackjack, cards as c, player as p
+import blackjack, poker, cards as c, player as p
 from collections import OrderedDict
 import time
 from threading import Timer
@@ -11,11 +11,11 @@ bots = ['CasinoBot', 'Vertigo', 'Antilopinae']
 game = False # Holds the game object
 in_play = False  # Used to test if the game is in play
 starting = False # Used to prevent 2 games in the rare instance 2 people try to start one at once
-game_type = None  # Used to record what type of game is currently running
 leaving = []  # Used to hold player ids of players who ran !left but we are waiting on confirmation from
 
 arguments = {'start': 1, 'enter': 0, 'leave': 0, 'buy': 1, 'sell': 1, 'bet': 1, 'allin': 0, 'bets': 0, 'hand': 0, 'player': 0, 'players': 0}
-help = OrderedDict([('start', "To start a game use the command '!start gamename'. Games you can start include blackjack."),
+help = OrderedDict([('start', "To start a game use the command '!start gamename'. Games you can start include blackjack, poker (5-card), or 7poker (7-card). "
+                              " For poker you can also optionally set the stakes. Ex. '!poker stakes' This can be 'high' or 'low', default is 'normal'. For more info see the wiki."),
                     ('enter', "To enter a game that is currently running, use the command '!enter'."),
                     ('leave', "To leave a game that is running, use the command '!leave'. Note that if you have"
                               "placed any bets, your bet will be forfeit."),
@@ -23,7 +23,7 @@ help = OrderedDict([('start', "To start a game use the command '!start gamename'
                             "This will remove 1000 gold from you on-site and add it to your betting pool."),
                     ('sell', "To cash out use the command '!sell amount'. Ex. !sell 1000. This will remove 1000 "
                              "gold from your betting pool and add it back to your account on-site. Use '!sell all' to cash out fully."),
-                    ('bet', "To place a bet use the command '!bet amount'. Ex. !bet 100. You can only"
+                    ('bet', "To place a bet use the command '!bet amount'. Ex. !bet 100. You can only "
                             "bet during betting rounds."),
                     ('allin', "To bet all of your gold use the command '!allin'. You can only bet during betting rounds."),
                     ('bets', "To view all current bets around the table, use the command '!bets'."),
@@ -46,6 +46,14 @@ casino_join.priority = 'high'
 
 def casino_part(phenny, input):
     if input.uid in p.players.keys():
+        if in_play and input.uid in p.in_game:
+            p.remove_from_game(input.uid)
+            if hasattr(game, 'started') and game.started:
+                phenny.say("%s forfeit their bet and left the game early." % p.players[input.uid].name)
+            else:
+                phenny.say("%s left the game." % p.players[input.uid].name)
+            if len(p.in_game) == 0:
+                game.game_over()
         p.remove_player(input.uid)
 casino_part.event = 'PART'
 casino_part.rule = r'.*'
@@ -84,7 +92,7 @@ def buy(phenny, input):
                 phenny.write(('NOTICE', input.nick + " An unknown error occurred."))  # NOTICE
             return False
         else:
-            p.players[input.uid].add_gold(phenny, amount)
+            p.players[input.uid].add_gold(amount)
             phenny.write(('NOTICE', input.nick + " You bought " + str(amount) + " gold worth of chips."))  # NOTICE
     else:
         phenny.write(('NOTICE', input.nick + " You can only buy in with a positive, non-decimal amount of gold. Ex. !buy 100"))  # NOTICE
@@ -173,7 +181,7 @@ balance.priority = 'low'
 
 # Start a new game
 def start(phenny, input):
-    global game, in_play, game_type, starting, arguments, help, temp_cmds
+    global game, in_play, starting, arguments, help, temp_cmds
     if not starting:
         starting = True
         args = check_args(phenny, input.group(0))
@@ -189,10 +197,28 @@ def start(phenny, input):
                 in_play = True
                 join_casino(input)
                 game = blackjack.Game(phenny, input.uid, input.nick)
-                game_type = 'blackjack'
                 for item,string in blackjack.help.items():
                     help[item] = string
                 for item,args in blackjack.arguments.items():
+                    arguments[item] = args
+                    temp_cmds.append(item)
+            elif args[0] == "poker" or args[0] == "5poker" or args[0] == "7poker" or args[0] == "poker5" or args[0] == "poker7":
+                if len(args) < 2:
+                    stakes = "mid"
+                else:
+                    stakes = args[1]
+
+                if args[0] == "7poker" or args[0] == "poker7":
+                    cards = 7
+                else:
+                    cards = 5
+
+                in_play = True
+                join_casino(input)
+                game = poker.Game(phenny, input.uid, input.nick, cards, stakes)
+                for item,string in poker.help.items():
+                    help[item] = string
+                for item,args in poker.arguments.items():
                     arguments[item] = args
                     temp_cmds.append(item)
         starting = False
@@ -261,7 +287,7 @@ def bet(phenny, input):
 
         if args[0].isdigit():
             amount = int(args[0])
-            phenny.say(p.players[input.uid].place_bet(amount))
+            game.bet(input.uid, amount)
         else:
             phenny.say("You can only bet with a positive, non-decimal amount of gold. Ex. !bet 100")
     elif in_play and input.uid in p.in_game:

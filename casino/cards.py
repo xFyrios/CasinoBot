@@ -61,6 +61,12 @@ class Hand:
     def add_card(self, card):
         self.cards.append(card)
 
+    def remove_card(self, index):
+        index = int(index)
+        card = self.cards[index]
+        del self.cards[index]
+        return card
+
     def empty_hand(self):
         del self.cards[:]
 
@@ -72,6 +78,14 @@ class Hand:
             value += VALUES[card.rank]
 
         return value
+
+    def number_cards(self):
+        hand = ''
+        i = 0
+        for card in self.cards:
+            i += 1
+            hand += str(i) + " - " + str(card) + ", "
+        return hand[:-2]
 
 
 if __name__ == '__main__':

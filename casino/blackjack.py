@@ -37,6 +37,7 @@ def hand_value(self):
 class Game:
     # The main game object for blackjack
     def __init__(self, phenny, uid, nick):
+        self.game_type = "blackjack"
         self.started = False
         self.deck = False
         self.accept_bets = False
@@ -50,7 +51,7 @@ class Game:
 
         p.add_player(0, 'Dealer')
         p.players[0].hand.hand_value = MethodType(hand_value, p.players[0].hand)
-        p.players[0].add_gold(self.phenny, 1000000)
+        p.players[0].add_gold(1000000)
         self.starter_uid = uid
 
         self.phenny.say("A new game of blackjack has begun! Type !enter if you'd like to play. You have 30 seconds to join.")
@@ -97,6 +98,9 @@ class Game:
         self.accept_bets = True
         self.t = Timer(30.0, self.deal_cards)
         self.t.start()
+
+    def bet(self, uid, amount):
+        self.phenny.say(p.players[uid].place_bet(amount))
 
     def deal_cards(self):
         self.t = False
@@ -164,7 +168,7 @@ class Game:
     def play(self):
         if len(p.in_game) == 0:
             self.game_over()  # All players already lost
-	    return
+            return
         p.in_game = p.in_game[::-1]  # Start by reversing the in-game list as the dealer starts on their left
 
         # Hit or stand? Keep asking until the user stands or busts
@@ -227,9 +231,9 @@ class Game:
                 self.t = False
         
             bet = p.players[uid].bet
-            p.players[0].add_gold(self.phenny, bet/2)
+            p.players[0].add_gold(bet/2)
             p.players[uid].bet = 0
-            p.players[uid].add_gold(self.phenny, bet/2)
+            p.players[uid].add_gold(bet/2)
             p.remove_from_game(uid)
             gold = p.players[uid].gold
             self.phenny.write(('NOTICE', p.players[uid].name + " You surrendered losing half your bet of " + str(bet) + " to the dealer. You have " + str(gold) + " left."))  # NOTICE
@@ -286,7 +290,7 @@ class Game:
             if p.players[0].hand.hand_value() > 21:
                 self.phenny.say("BUST! The Dealer went over 21. All remaining players win!")
                 for uid in p.in_game[:]:
-                    p.players[uid].win(self.phenny)
+                    p.players[uid].win(self.phenny, (p.players[uid].bet * 2))
                 self.game_over()
                 break
         else :
@@ -308,7 +312,7 @@ class Game:
                 p.players[uid].tie(self.phenny)
             else:
                 self.phenny.say("%s's hand beat the Dealer's hand by %d points." % (p.players[uid].name, player_value - dealer_value))
-                self.phenny.say(p.players[uid].win(self.phenny))
+                self.phenny.say(p.players[uid].win(self.phenny, (p.players[uid].bet * 2)))
         self.game_over()  # Now end the game
 
     def game_over(self):
@@ -327,7 +331,6 @@ class Game:
         # Update casino's game variables
         casino.game = False
         casino.in_play = False
-        casino.game_type = None
         for item in casino.temp_cmds:
             if item in casino.help:
                 del casino.help[item]
