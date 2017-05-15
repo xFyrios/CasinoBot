@@ -359,6 +359,7 @@ def donate(force = False):
     if not in_play and gold > 0 and rand == 2:
         phenny.callGazelleApi({'amount': amount, 'action': 'donateGold'})
         phenny.say("CasinoBot donated " + amount + " gold to the Request Pool.")
+        gold = 0
 
 
 if __name__ == '__main__':
