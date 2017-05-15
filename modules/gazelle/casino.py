@@ -4,6 +4,7 @@ import blackjack, poker, cards as c, player as p
 from collections import OrderedDict
 import time
 from threading import Timer
+from random import randint
 
 # The list of bots to never join in games
 bots = ['CasinoBot', 'Vertigo', 'Antilopinae']
@@ -12,6 +13,7 @@ game = False # Holds the game object
 in_play = False  # Used to test if the game is in play
 starting = False # Used to prevent 2 games in the rare instance 2 people try to start one at once
 leaving = []  # Used to hold player ids of players who ran !left but we are waiting on confirmation from
+gold = 0
 
 arguments = {'start': 1, 'enter': 0, 'leave': 0, 'buy': 1, 'sell': 1, 'bet': 1, 'allin': 0, 'bets': 0, 'hand': 0, 'player': 0, 'players': 0}
 help = OrderedDict([('start', "To start a game use the command '!start gamename'. Games you can start include blackjack, poker (5-card), or 7poker (7-card). "
@@ -114,6 +116,7 @@ def sell(phenny, input):
                     else:
                         p.players[uid].remove_gold(p.players[uid].gold)
             phenny.say("Forced all users to sell out.")
+            self.donate(True)
         else:
             phenny.say("You do not have permission to use this command.")
 
@@ -346,6 +349,16 @@ def cancel_leave(uid):
     if uid in leaving:
         index = leaving.index(uid)
         del leaving[index]
+
+# Donate gold to the requests pool
+def donate(force = False):
+    global gold
+    rand = randint(0,9)
+    if force:
+        rand = 2
+    if not in_play and gold > 0 and rand == 2:
+        phenny.callGazelleApi({'amount': amount, 'action': 'donateGold'})
+        phenny.say("CasinoBot donated " + amount + " gold to the Request Pool.")
 
 
 if __name__ == '__main__':

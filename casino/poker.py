@@ -475,27 +475,23 @@ class Game:
                 if rank == '10':
                     rank = 'T'
                 suit = card.suit.lower()
-                print rank + suit
                 hand.append(deuces.Card.new(rank + suit))
-            print uid + ": " + str(hand)
             p.players[uid].score = evaluator.evaluate([], hand)
             p.players[uid].rank_class = evaluator.get_rank_class(p.players[uid].score)
             if p.players[uid].score < best_score:
                 best_score = p.players[uid].score
                 winner = uid
-            print "score: " + str(p.players[uid].score)
-            print "rank: " + str(p.players[uid].rank_class)
-            print "class: " + str(evaluator.class_to_string(p.players[uid].rank_class))
-            print ''
             scores = scores + " " + p.players[uid].name + " - " + str(evaluator.class_to_string(p.players[uid].rank_class)) + ","
         del evaluator
         scores = scores[:-1]
         self.phenny.say(scores)
         
         winnings = self.betting_pot - p.players[winner].bet
-        print "pot: " + str(self.betting_pot) + " winners bet: " + str(p.players[winner].bet) + " winnings: " + str(winnings)
+        house = (winnings * 0.05)
+        casino.gold += house
+        winnings = (winnings * 0.95)
         p.players[winner].win(self.phenny, self.betting_pot)
-        self.phenny.say("%s has the highest ranking hand! They won %d gold! They now have %d gold." % (p.players[winner].name, winnings, p.players[winner].gold))
+        self.phenny.say("%s has the highest ranking hand! They won %d gold! They now have %d gold. %d gold was taken by the house." % (p.players[winner].name, winnings, p.players[winner].gold, house))
             
     
     def game_over(self):
@@ -506,12 +502,15 @@ class Game:
         if len(p.in_game) == 1:
             uid = p.in_game[0]
             winnings = self.betting_pot - p.players[uid].bet 
+            house = (winnings * 0.05)
+            casino.gold += house
+            winnings = (winnings * 0.95)
             p.players[uid].win(self.phenny, self.betting_pot)
-            self.phenny.say("%s is the last man standing! They won %d gold! They now have %d gold." % (p.players[uid].name, winnings, p.players[uid].gold))
+            self.phenny.say("%s is the last man standing! They won %d gold! They now have %d gold. %d gold was taken by the house." % (p.players[uid].name, winnings, p.players[uid].gold, house))
         elif len(p.in_game) > 1:
             self.phenny.say("Alright, time for the showdown! Show your cards!")
             self.show_table()
-            uid = self.get_winner()
+            self.get_winner()
             
         del p.in_game[:]
         for uid in p.players:
@@ -529,6 +528,7 @@ class Game:
                 del casino.help[item]
             if item in casino.arguments:
                 del casino.arguments[item]
+	casino.donate()
 
 
 if __name__ == '__main__':
