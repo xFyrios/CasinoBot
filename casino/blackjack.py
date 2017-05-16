@@ -461,7 +461,7 @@ class Game:
             for hand in p.players[uid].hand:
                 hand.empty_hand()
             del p.players[uid].hand[:]
-        del p.players[:]
+        p.players.clear()
         self.phenny.say("Game Over!")
         del self
 
