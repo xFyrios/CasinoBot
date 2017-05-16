@@ -458,9 +458,10 @@ class Game:
         for uid in p.players:
             p.players[uid].bet = 0
             p.players[uid].in_game = False
-            p.players[uid].hand = []
             for hand in p.players[uid].hand:
                 hand.empty_hand()
+            del p.players[uid].hand[:]
+        del p.players[:]
         self.phenny.say("Game Over!")
         del self
 
