@@ -7,8 +7,7 @@ def hit(phenny, input):
         args = casino.check_args(phenny, input.group(0))
         if not args:
             casino.game.hit(input.uid)
-
-        if args[0].isdigit() and int(args[0]) > 0:
+        elif args[0].isdigit() and int(args[0]) > 0:
             handid = int(args[0]) - 1
             casino.game.hit(input.uid, handid)
         else:
@@ -26,8 +25,7 @@ def split(phenny, input):
         args = casino.check_args(phenny, input.group(0))
         if not args:
             casino.game.split(input.uid)
-
-        if args[0].isdigit() and int(args[0]) > 0:
+        elif args[0].isdigit() and int(args[0]) > 0:
             handid = int(args[0]) - 1
             casino.game.split(input.uid, handid)
         else:
@@ -44,8 +42,7 @@ def doubledown(phenny, input):
         args = casino.check_args(phenny, input.group(0))
         if not args:
             casino.game.doubledown(input.uid)
-
-        if args[0].isdigit() and int(args[0]) > 0:
+        elif args[0].isdigit() and int(args[0]) > 0:
             handid = int(args[0]) - 1
             casino.game.doubledown(input.uid, handid)
         else:
