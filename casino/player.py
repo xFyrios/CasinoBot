@@ -93,7 +93,7 @@ class Player:
         phenny.write(('NOTICE', self.name + " You won " + str(winnings) + " gold!"))  # NOTICE
         return "%s has a natural blackjack! They won %d gold (1.5x bet)! They now have %d gold." % (self.name, winnings, self.gold)
 
-    def win(self, phenny):
+    def win(self, phenny, handid=0):
         self.wins += 1
         dbuid = str(self.uid)
         db = shelve.open('casino.db')
@@ -103,10 +103,12 @@ class Player:
             db[dbuid] = p
         finally:
             db.close()
-        winnings = self.bet
-        self.add_gold(phenny, winnings + self.bet)
-        self.bet = 0
-        remove_from_game(self.uid)
+        winnings = self.bet/self.count_hands()
+        self.add_gold(phenny, winnings)
+        self.bet -= winnings
+        self.hand.pop(handid)
+        if self.count_hands() == 0:
+            remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " You won " + str(winnings) + " gold!"))  # NOTICE
         return "%s beat the dealer! They won %d gold! They now have %d gold." % (self.name, winnings, self.gold)
 
@@ -120,18 +122,21 @@ class Player:
             db[dbuid] = p
         finally:
             db.close()
-        players[0].add_gold(phenny, self.bet)
-        bet = self.bet
-        self.bet = 0
+        bet = self.bet/self.count_hands()
+        players[0].add_gold(phenny, bet)
+        self.bet -= bet
         self.hand.pop(handid)
         if self.count_hands() == 0:
             remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " You lost your bet of " + str(bet) + " to the dealer. You have " + str(self.gold) + " left."))  # NOTICE
 
-    def tie(self, phenny):
-        self.add_gold(phenny, self.bet)
-        self.bet = 0
-        remove_from_game(self.uid)
+    def tie(self, phenny, handid = 0):
+        bet = self.bet/self.count_hands()
+        self.add_gold(phenny, bet)
+        self.bet -= bet
+        self.hand.pop(handid)
+        if self.count_hands() == 0:
+            remove_from_game(self.uid)
         phenny.write(('NOTICE', self.name + " Your bet was returned to you."))  # NOTICE
 
 

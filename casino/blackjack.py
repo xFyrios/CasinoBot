@@ -418,7 +418,10 @@ class Game:
             if p.players[0].hand[0].hand_value() > 21:
                 self.phenny.say("BUST! The Dealer went over 21. All remaining players win!")
                 for uid in p.in_game[:]:
-                    p.players[uid].win(self.phenny)
+                    i = 0
+                    for hand in p.players[uid].hand:
+                        p.players[uid].win(self.phenny, i)
+                        i += 1
                 self.game_over()
                 break
         else :
@@ -431,16 +434,19 @@ class Game:
         dealer_value = p.players[0].hand[0].hand_value()
 
         for uid in p.in_game[:]:
-            player_value = p.players[uid].hand[0].hand_value()
-            if dealer_value > player_value or player_value > 21:
-                self.phenny.say("Dealer's hand beat %s's hand by %d points." % (p.players[uid].name, dealer_value - player_value))
-                p.players[uid].lose(self.phenny)
-            elif dealer_value == player_value:
-                self.phenny.say("There was a tie between %s and the dealer." % p.players[uid].name)
-                p.players[uid].tie(self.phenny)
-            else:
-                self.phenny.say("%s's hand beat the Dealer's hand by %d points." % (p.players[uid].name, player_value - dealer_value))
-                self.phenny.say(p.players[uid].win(self.phenny))
+            i = 0
+            for hand in p.players[uid].hand:
+                player_value = hand.hand_value()
+                if dealer_value > player_value or player_value > 21:
+                    self.phenny.say("Dealer's hand beat %s's hand %d by %d points." % (p.players[uid].name, i+1,dealer_value - player_value))
+                    p.players[uid].lose(self.phenny,i)
+                elif dealer_value == player_value:
+                    self.phenny.say("There was a tie between %s's hand %d and the dealer." % (p.players[uid].name, i+1))
+                    p.players[uid].tie(self.phenny,i)
+                else:
+                    self.phenny.say("%s's hand %d beat the Dealer's hand by %d points." % (p.players[uid].name, i+1, player_value - dealer_value))
+                    self.phenny.say(p.players[uid].win(self.phenny,i))
+                i += 1
         self.game_over()  # Now end the game
 
     def game_over(self):
