@@ -18,15 +18,7 @@ hit.priority = 'high'
 
 def stand(phenny, input):
     if casino.game:
-        args = casino.check_args(phenny, input.group(0))
-        if not args:
-            casino.game.stand(input.uid)
-
-        if args[0].isdigit() and int(args[0]) > 0:
-            handid = int(args[0]) - 1
-            casino.game.stand(input.uid, handid )
-        else:
-            phenny.write(('NOTICE', input.nick + " Specify the hand using a digit. Ex. !stand 1"))
+        casino.game.stand(input.uid)
 stand.commands = ['stand', 'Stand', 'stay', 'Stay', 's']
 
 def split(phenny, input):

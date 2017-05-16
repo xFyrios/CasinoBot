@@ -234,9 +234,10 @@ class Game:
                     if self.accept_split[handid]:
                         split = ", !Split %i" %(i+1)
 
-                    choices = "Hand %s: !Stand %s, !Hit %s%s%s" %(i+1, i+1, i+1, doubledown, split)
+                    choices = "Hand %s: !Hit %s%s%s" %(i+1, i+1, doubledown, split)
                     self.phenny.say(choices)
                     i += 1
+                self.phenny.say("You can also !stand to end your turn")
                 self.t = Timer(30.0, self.stand, [uid, True])
                 self.t.start()
             elif len(p.in_game) == 0:
@@ -314,9 +315,10 @@ class Game:
                     if self.accept_split[handid]:
                         split = ", !Split %i" %(i+1)
 
-                    choices = "Hand %s: !Stand %s, !Hit %s%s%s" %(i+1, i+1, i+1, doubledown, split)
+                    choices = "Hand %s: !Hit %s%s%s" %(i+1, i+1, doubledown, split)
                     self.phenny.say(choices)
                     i += 1
+                self.phenny.say("You can also !stand to end your turn")
                 self.t = Timer(30.0, self.stand, [uid, True])
                 self.t.start()
             else:
@@ -450,6 +452,7 @@ class Game:
         for uid in p.players:
             p.players[uid].bet = 0
             p.players[uid].in_game = False
+            p.players[uid].hand = []
             for hand in p.players[uid].hand:
                 hand.empty_hand()
         self.phenny.say("Game Over!")
