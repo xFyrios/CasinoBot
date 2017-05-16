@@ -73,7 +73,7 @@ class Player:
         else:
             self.remove_gold(amount)
             self.bet += amount
-            return '%s placed a bet of %d gold. They have %d gold left.' % (self.name, amount, self.gold)
+            return '%s placed a bet of %d gold. They bet %d gold in total this round. They have %d gold left.' % (self.name, amount, self.bet, self.gold)
 
     # Functions for winning/losing/ties
     def win_natural(self, phenny):
