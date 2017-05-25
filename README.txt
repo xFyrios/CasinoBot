@@ -1,5 +1,9 @@
 Installation &c.
 
+Dependencies:
+Download https://github.com/worldveil/deuces
+Run pip install -e downloaded location
+
 1) Run ./phenny - this creates a default config file
 2) Edit ~/.config/default.py
 3) Run ./phenny - this now runs phenny with your settings
