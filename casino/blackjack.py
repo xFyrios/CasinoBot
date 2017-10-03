@@ -137,7 +137,7 @@ class Game:
                 else:
                     self.phenny.say(p.players[uid].win_natural(self.phenny))
             elif dealer_win:
-                casino.gold += p.players[uid].bet
+                casino.gold += (p.players[uid].bet * 0.25)
                 p.players[uid].lose(self.phenny)
                 self.phenny.say("%s lost to the dealers natural blackjack." % p.players[uid].name)
 
@@ -193,7 +193,7 @@ class Game:
                 self.t = False
 
             if p.players[uid].hand.hand_value() > 21:
-                casino.gold += p.players[uid].bet
+                casino.gold += (p.players[uid].bet * 0.25)
                 p.players[uid].lose(self.phenny)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
                 del self.turns[0]
@@ -233,7 +233,7 @@ class Game:
                 self.t = False
         
             bet = p.players[uid].bet
-            casino.gold += bet
+            casino.gold += (bet * 0.25)
             p.players[0].add_gold(bet/2)
             p.players[uid].bet = 0
             p.players[uid].add_gold(bet/2)
@@ -252,7 +252,7 @@ class Game:
             self.phenny.say("Hit. %s: %s" % (p.players[uid].name, str(p.players[uid].hand)))
             
             if p.players[uid].hand.hand_value() > 21:
-                casino.gold += p.players[uid].bet
+                casino.gold += (p.players[uid].bet * 0.25)
                 p.players[uid].lose(self.phenny)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
                 self.next_player()
@@ -310,7 +310,7 @@ class Game:
             player_value = p.players[uid].hand.hand_value()
             if dealer_value > player_value or player_value > 21:
                 self.phenny.say("Dealer's hand beat %s's hand by %d points." % (p.players[uid].name, dealer_value - player_value))
-                casino.gold += p.players[uid].bet
+                casino.gold += (p.players[uid].bet * 0.25)
                 p.players[uid].lose(self.phenny)
             elif dealer_value == player_value:
                 self.phenny.say("There was a tie between %s and the dealer." % p.players[uid].name)
@@ -331,7 +331,6 @@ class Game:
             p.players[uid].in_game = False
             p.players[uid].hand.empty_hand()
         self.phenny.say("Game Over!")
-        del self
 
         # Update casino's game variables
         casino.game = False
@@ -341,7 +340,8 @@ class Game:
                 del casino.help[item]
             if item in casino.arguments:
                 del casino.arguments[item]
-	casino.donate()
+	casino.donate(self.phenny)
+	del self
 
 
 if __name__ == '__main__':

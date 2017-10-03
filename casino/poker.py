@@ -148,8 +148,10 @@ class Game:
 
     def deal_cards(self):
         # Build the deck and shuffle it
+	print "Deal: " + str(self.deck)
         self.deck = c.Deck()
         self.deck.shuffle()
+	print "Deal2: " + str(self.deck)
         # Extra deck used for holding discarded cards
         self.deck2 = c.Deck()
         del self.deck2.cards[:]
@@ -518,7 +520,6 @@ class Game:
             p.players[uid].in_game = False
             p.players[uid].hand.empty_hand()
         self.phenny.say("Game Over!")
-        del self
 
         # Update casino's game variables
         casino.game = False
@@ -528,7 +529,10 @@ class Game:
                 del casino.help[item]
             if item in casino.arguments:
                 del casino.arguments[item]
-	casino.donate()
+	casino.donate(self.phenny)
+        self.deck = False
+        self.deck2 = False
+	del self
 
 
 if __name__ == '__main__':

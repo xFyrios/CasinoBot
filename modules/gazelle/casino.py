@@ -116,7 +116,7 @@ def sell(phenny, input):
                     else:
                         p.players[uid].remove_gold(p.players[uid].gold)
             phenny.say("Forced all users to sell out.")
-            self.donate(True)
+            donate(phenny, True)
         else:
             phenny.say("You do not have permission to use this command.")
 
@@ -351,14 +351,14 @@ def cancel_leave(uid):
         del leaving[index]
 
 # Donate gold to the requests pool
-def donate(force = False):
+def donate(phenny, force = False):
     global gold
     rand = randint(0,9)
     if force:
         rand = 2
     if not in_play and gold > 0 and rand == 2:
-        phenny.callGazelleApi({'amount': amount, 'action': 'donateGold'})
-        phenny.say("CasinoBot donated " + amount + " gold to the Request Pool.")
+        phenny.callGazelleApi({'amount': gold, 'action': 'donateGold'})
+        phenny.say("CasinoBot donated " + str(gold) + " gold to the Request Pool.")
         gold = 0
 
 
