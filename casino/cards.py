@@ -21,9 +21,9 @@ class Card:
 
     def __str__(self):
         if self.suit == 'H' or self.suit == 'D':
-            return "04" + self.rank + self.suit + ""
+            return "04{}{}".format(self.rank, self.suit)
         else:
-            return "0,01" + self.rank + self.suit + ""
+            return "0,01{}{}".format(self.rank, self.suit)
 
 
 class Deck:
@@ -35,10 +35,7 @@ class Deck:
                 self.cards.append(Card(suit, rank))
 
     def __str__(self):
-        deck = 'Deck:'
-        for card in self.cards:
-            deck += " " + str(card)
-        return deck
+        return "Deck: " + " ".join(str(c) for c in self.cards)
 
     def shuffle(self):
         random.shuffle(self.cards)
@@ -53,39 +50,25 @@ class Hand:
         self.cards = []
 
     def __str__(self):
-        hand = ''
-        for card in self.cards:
-            hand += str(card) + ' '
-        return hand
+        return " ".join(str(c) for c in self.cards) + " "
+        # FIXME: do we really need a trailing space here?
 
     def add_card(self, card):
         self.cards.append(card)
 
     def remove_card(self, index):
-        index = int(index)
-        card = self.cards[index]
-        del self.cards[index]
-        return card
+        return self.cards.pop(int(index))
 
     def empty_hand(self):
         del self.cards[:]
 
     def get_value(self):
         # Count ace's as 1 by default, can override this in the various games
-        value = 0
-
-        for card in self.cards:
-            value += VALUES[card.rank]
-
-        return value
+        return sum(VALUES(card.rank) for card in self.cards)
 
     def number_cards(self):
-        hand = ''
-        i = 0
-        for card in self.cards:
-            i += 1
-            hand += str(i) + " - " + str(card) + ", "
-        return hand[:-2]
+        return ", ".join("{} - {}".format(i, card)
+                         for i, card in enumerate(self.cards, 1))
 
 
 if __name__ == '__main__':
