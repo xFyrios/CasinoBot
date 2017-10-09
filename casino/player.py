@@ -187,7 +187,7 @@ def add_to_game(phenny, uid):
             return "%s joined the game." % players[uid].name
 
 
-def remove_from_game(uid):
+def remove_from_game(uid): 
     in_game.remove(uid)
     players[uid].in_game = False
 
@@ -202,7 +202,8 @@ def list_in_game():
 def deal(deck, amount):
     while amount > 0:
         for uid in players:
-            players[uid].hand.add_card(deck.deal_card())
+	    if players[uid].in_game == True or uid == 0:
+                players[uid].hand.add_card(deck.deal_card())
         amount -= 1
 
 
