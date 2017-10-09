@@ -61,6 +61,19 @@ casino_part.event = 'PART'
 casino_part.rule = r'.*'
 casino_part.priority = 'high'
 
+def casino_quit(phenny, input):
+    casino_part(phenny, input);
+casino_quit.event = 'QUIT'
+casino_quit.rule = r'.*'
+casino_quit.priority = 'high'
+
+def casino_nick(phenny, input):
+    if input.uid in p.players.keys():
+        p.players[input.uid].name = input.args[0];
+casino_nick.event = 'NICK'
+casino_nick.rule = r'.*'
+casino_nick.priority = 'high'	
+
 # Help commands
 def casino_help(phenny, input):
     if not input.group(2):
