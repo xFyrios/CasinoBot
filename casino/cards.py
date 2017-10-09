@@ -64,7 +64,7 @@ class Hand:
 
     def get_value(self):
         # Count ace's as 1 by default, can override this in the various games
-        return sum(VALUES(card.rank) for card in self.cards)
+        return sum(VALUES[card.rank] for card in self.cards)
 
     def number_cards(self):
         return ", ".join("{} - {}".format(i, card)
