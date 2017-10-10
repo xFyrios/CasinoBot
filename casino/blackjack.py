@@ -197,6 +197,10 @@ class Game:
                 p.players[uid].lose(self.phenny)
                 self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[uid].name)
                 del self.turns[0]
+		
+           if p.players[uid].hand.hand_value() == 21:
+                self.phenny.say("Blackjack! %s reached 21, therefore they stand." % p.players[uid].name)
+                self.stand(uid)
 
             if len(self.turns) > 0 and self.turns[0] == uid: # This players next move
                 self.accept_surrender = False
