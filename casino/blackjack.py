@@ -263,6 +263,8 @@ class Game:
         if p.players[uid].hand.hand_value() in [9,10,11] and int(p.players[uid].gold) >= int(p.players[uid].bet):
             # We allow double downs when hand value is 9,10, or 11 and the player has enough gold to double their bet
             self.accept_doubledown = True
+        else:
+            self.accept_doubledown = False
 
     def next_player(self):
         if len(self.turns) > 0:
