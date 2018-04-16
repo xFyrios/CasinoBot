@@ -18,6 +18,7 @@ class Player:
         self.in_game = False
         self.wins = 0
         self.losses = 0
+        self.splits = 0
 
     def __str__(self):
         string = "Player ID: %s  Name: %s  Gold: %d  Wins: %d  Losses: %d" % (self.uid, self.name, self.gold, self.wins, self.losses)
@@ -67,6 +68,9 @@ class Player:
             self.bet += amount
             return '%s placed a bet of %d gold. They have %d gold left.' % (self.name, amount, self.gold)
 
+    def remove_from_game(self):
+        remove_from_game(self.uid)
+
     # Functions for winning/losing/ties
     def win_natural(self, phenny):
         self.wins += 1
@@ -81,7 +85,7 @@ class Player:
         winnings = self.bet * 1.5
         self.add_gold(winnings + self.bet)
         self.bet = 0
-        remove_from_game(self.uid)
+        self.remove_from_game()
         phenny.write(('NOTICE', self.name + " You won " + str(winnings) + " gold!"))  # NOTICE
         return "%s has a natural blackjack! They won %d gold (1.5x bet)! They now have %d gold." % (self.name, winnings, self.gold)
 
@@ -98,7 +102,7 @@ class Player:
         self.add_gold(amount)
         winnings = amount - self.bet
         self.bet = 0
-        remove_from_game(self.uid)
+        self.remove_from_game()
         phenny.write(('NOTICE', self.name + " You won " + str(winnings) + " gold!"))  # NOTICE
         return "%s beat the dealer! They won %d gold! They now have %d gold." % (self.name, winnings, self.gold)
 
@@ -116,13 +120,13 @@ class Player:
             players[0].add_gold(self.bet)
         bet = self.bet
         self.bet = 0
-        remove_from_game(self.uid)
+        self.remove_from_game()
         phenny.write(('NOTICE', self.name + " You lost your bet of " + str(bet) + " gold. You have " + str(self.gold) + " left."))  # NOTICE
 
     def tie(self, phenny):
         self.add_gold(self.bet)
         self.bet = 0
-        remove_from_game(self.uid)
+        self.remove_from_game()
         phenny.write(('NOTICE', self.name + " Your bet was returned to you."))  # NOTICE
 
 
@@ -186,6 +190,9 @@ def add_to_game(phenny, uid):
                 phenny.write(('NOTICE', players[uid].name + " You have joined the game but not bought in yet. Use '!buy amount' to buy in."))  # NOTICE
             return "%s joined the game." % players[uid].name
 
+
+def make_fake_id(uid):
+    return str(uid) + "'s split" + str(players[uid].splits)
 
 def remove_from_game(uid): 
     in_game.remove(uid)
