@@ -1,0 +1,42 @@
+------------------------------------------
+Basic Split
+------------------------------------------
+Split. squessh has split his hand to two, adding his bet of 100 to his second hand
+Hit. squessh: 4H 4C 
+Hit. squessh: 4S 5D 
+/NOTICE squessh Your Hand: 4H 4C  <- Current Hand
+/NOTICE squessh Your Hand: 4S 5D 
+squessh. !Stand, !Hit, !Surrender, or !Split?
+------------------------------------------
+Split After Split
+------------------------------------------
+Split. squessh has split his hand to two, adding his bet of 100 to his second hand
+Hit. squessh: 4H 5H 
+Hit. squessh: 4C 10S 
+/NOTICE squessh Your Hand: 4H 5H  <- Current Hand
+/NOTICE squessh Your Hand: 4S 5D 
+/NOTICE squessh Your Hand: 4C 10S 
+squessh. !Stand, !Hit, !Surrender, or !DoubleDown?
+------------------------------------------
+Hand as actual player
+------------------------------------------
+/NOTICE squessh Your Hand: 4H 5H  <- Current Hand
+/NOTICE squessh Your Hand: 4S 5D 
+/NOTICE squessh Your Hand: 4C 10S 
+------------------------------------------
+Hand as other player
+------------------------------------------
+/NOTICE veesh Your Hand: 10H 10S 
+------------------------------------------
+DoubleDown after Split
+------------------------------------------
+squessh placed a bet of 100 gold. They have 100 gold left.
+Hit. squessh: 4H 5H AH 
+/NOTICE squessh Your Hand: 4C 10S 
+squessh. !Stand, !Hit, or !Surrender?
+------------------------------------------
+Hand as split player
+------------------------------------------
+/NOTICE squessh Your Hand: 4H 5H AH 
+/NOTICE squessh Your Hand: 4S 5D 
+/NOTICE squessh Your Hand: 4C 10S  <- Current Hand

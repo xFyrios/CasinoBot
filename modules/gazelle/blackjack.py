@@ -23,6 +23,11 @@ def doubledown(phenny, input):
         casino.game.doubledown(input.uid)
 doubledown.commands = ['doubledown','DoubleDown','double','Double']
 
+def split(phenny, input):
+    if casino.game and casino.game.game_type == 'blackjack':
+        casino.game.split(input.uid)
+split.commands = ['split', 'Split', 'sp']
+
 def hand(phenny, input):
     if casino.game and casino.game.game_type == 'blackjack':
         casino.game.hand(input.uid)
