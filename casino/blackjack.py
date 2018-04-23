@@ -352,11 +352,7 @@ class Game:
     def next_player(self):
         if len(self.turns) > 0:
             uid = self.turns[0]
-<<<<<<< HEAD
             self._hand(uid)
-=======
-            self.hand(uid)
->>>>>>> cf3c884dd5dbb7d1a518be1a648e2e488dae2435
             self._start_turn(uid)
         else:
             self.accept_surrender = False
@@ -366,7 +362,6 @@ class Game:
     def _hand(self, uid):
         self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: %s" % p.players[uid].hand))
     def hand(self, uid):
-<<<<<<< HEAD
         for i in p.in_game:
             if p.players[i].uid == uid:
                 if self.turns[0] == i and p.players[i].splits > 0:
@@ -374,10 +369,6 @@ class Game:
                 else:
                     extra = ''
                 self.phenny.write(('NOTICE', p.players[i].name + " Your Hand: %s" % p.players[i].hand + extra))
-=======
-        if uid in p.in_game:
-            self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: %s" % p.players[uid].hand))
->>>>>>> cf3c884dd5dbb7d1a518be1a648e2e488dae2435
 
     def dealer_play(self):
         self.phenny.say("Alright, Dealers Turn. The dealer flips his card upright...")
