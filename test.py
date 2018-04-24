@@ -114,7 +114,7 @@ for i in players:
 
 ##########################################
 # Actual Testing!
-deck = setup_deck("AS,7H,AC,AS,10H,10S,4H,4S,4C,5D,5H,10S,AH")
+deck = setup_deck("AS,7H,AC,AS,10H,10S,4H,4S,4C,5D,5H,10S,AH,3C,4H,10H")
 
 sner = make_game(guy.uid, guy.name)
 for i in players:
@@ -142,3 +142,11 @@ with test_banner("DoubleDown after Split"):
 
 with test_banner("Hand as split player"):
     sner.hand(players[2].uid)
+
+sner.stand(players[2].uid)
+sner.stand(players[2].uid)
+with test_banner("Player 2 splits"):
+    sner.split(players[1].uid)
+
+with test_banner("Player 2 loses"):
+    sner.hit(players[1].uid)
