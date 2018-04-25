@@ -344,7 +344,7 @@ class Game:
             self.accept_doubledown = False
 
     def set_split(self,uid):
-        if p.players[uid].hand.cards[0].rank == p.players[uid].hand.cards[1].rank and p.players[uid].gold >= int(p.players[uid].bet):
+        if p.players[uid].hand.cards[0].rank == p.players[uid].hand.cards[1].rank and p.players[uid].gold >= int(p.players[uid].bet) and p.players[uid].splits < 4:
             self.accept_split = True
         else:
             self.accept_split = False
