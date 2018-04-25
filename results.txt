@@ -40,3 +40,20 @@ Hand as split player
 /NOTICE squessh Your Hand: 4H 5H AH 
 /NOTICE squessh Your Hand: 4S 5D 
 /NOTICE squessh Your Hand: 4C 10S  <- Current Hand
+------------------------------------------
+Player 2 splits
+------------------------------------------
+Split. veesh has split his hand to two, adding his bet of 100 to his second hand
+Hit. veesh: 10H 3C 
+Hit. veesh: 10S 4H 
+/NOTICE veesh Your Hand: 10H 3C  <- Current Hand
+/NOTICE veesh Your Hand: 10S 4H 
+veesh. !Stand, !Hit, or !Surrender?
+------------------------------------------
+Player 2 loses
+------------------------------------------
+Hit. veesh: 10H 3C 10H 
+/NOTICE veesh You lost your bet of 100 gold. You have 300 left.
+BUST! veesh went over 21. Their bet was lost to the dealer.
+/NOTICE veesh Your Hand: 10S 4H 
+veesh. !Stand, !Hit, or !Surrender?

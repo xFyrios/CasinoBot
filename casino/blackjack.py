@@ -227,7 +227,7 @@ class Game:
             if p.players[uid].hand.hand_value() == 21:
                 self.phenny.say("Blackjack! %s reached 21, therefore they stand." % p.players[uid].name)
                 self.stand(pid)
-            elif len(self.turns) > 0 and self.is_current_player(pid): # This players next move
+            elif len(self.turns) > 0 and self.turns[0] == uid: # This players next move
                 self.accept_surrender  = False
                 self.accept_doubledown = False
                 self.accept_split      = False
@@ -344,7 +344,7 @@ class Game:
             self.accept_doubledown = False
 
     def set_split(self,uid):
-        if p.players[uid].hand.cards[0].rank == p.players[uid].hand.cards[1].rank and p.players[uid].gold >= int(p.players[uid].bet):
+        if p.players[uid].hand.cards[0].rank == p.players[uid].hand.cards[1].rank and p.players[uid].gold >= int(p.players[uid].bet) and p.players[uid].splits < 4:
             self.accept_split = True
         else:
             self.accept_split = False
