@@ -318,21 +318,18 @@ class Game:
             p.players[new_id].hand.hand_value = MethodType(hand_value, p.players[new_id].hand)
 
             #hit both of the new players, and evaluate their scores
+            deleted = False
             for x, i in enumerate([uid, new_id]):
                 p.players[i].hand.add_card(self.deck.deal_card())
                 self.phenny.say("Hit. %s: %s" % (p.players[i].name, str(p.players[i].hand)))
 
                 if p.players[i].hand.hand_value() == 21:
                     self.phenny.say(p.players[i].win_natural(self.phenny))
+                    del self.turns[x if not deleted else 0]
+                    deleted = True
 
-                if p.players[i].hand.hand_value() > 21:
-                    p.players[i].lose(self.phenny)
-                    self.phenny.say("BUST! %s went over 21. Their bet was lost to the dealer." % p.players[i].name)
-                    del self.turns[x]
-
-
-            self.hand(uid)
-            self._start_turn(uid)
+            self.next_player()
+            #will play this player, but the code overlaps
 
 
 

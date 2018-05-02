@@ -4,25 +4,22 @@ Basic Split
 Split. squessh has split his hand to two, adding his bet of 100 to his second hand
 Hit. squessh: 4H 4C 
 Hit. squessh: 4S 5D 
-/NOTICE squessh Your Hand: 4H 4C  <- Current Hand
-/NOTICE squessh Your Hand: 4S 5D 
+/NOTICE squessh Your Hand: 4H 4C 
 squessh. !Stand, !Hit, !Surrender, or !Split?
 ------------------------------------------
 Split After Split
 ------------------------------------------
 Split. squessh has split his hand to two, adding his bet of 100 to his second hand
 Hit. squessh: 4H 5H 
-Hit. squessh: 4C 10S 
-/NOTICE squessh Your Hand: 4H 5H  <- Current Hand
-/NOTICE squessh Your Hand: 4S 5D 
-/NOTICE squessh Your Hand: 4C 10S 
+Hit. squessh: 4C 4S 
+/NOTICE squessh Your Hand: 4H 5H 
 squessh. !Stand, !Hit, !Surrender, or !DoubleDown?
 ------------------------------------------
 Hand as actual player
 ------------------------------------------
 /NOTICE squessh Your Hand: 4H 5H  <- Current Hand
 /NOTICE squessh Your Hand: 4S 5D 
-/NOTICE squessh Your Hand: 4C 10S 
+/NOTICE squessh Your Hand: 4C 4S 
 ------------------------------------------
 Hand as other player
 ------------------------------------------
@@ -31,29 +28,62 @@ Hand as other player
 DoubleDown after Split
 ------------------------------------------
 squessh placed a bet of 100 gold. They have 100 gold left.
-Hit. squessh: 4H 5H AH 
-/NOTICE squessh Your Hand: 4C 10S 
-squessh. !Stand, !Hit, or !Surrender?
+Hit. squessh: 4H 5H 5H 
+/NOTICE squessh Your Hand: 4C 4S 
+squessh. !Stand, !Hit, !Surrender, or !Split?
 ------------------------------------------
 Hand as split player
 ------------------------------------------
-/NOTICE squessh Your Hand: 4H 5H AH 
+/NOTICE squessh Your Hand: 4H 5H 5H 
 /NOTICE squessh Your Hand: 4S 5D 
-/NOTICE squessh Your Hand: 4C 10S  <- Current Hand
+/NOTICE squessh Your Hand: 4C 4S  <- Current Hand
 ------------------------------------------
-Player 2 splits
+Reaches split limit
+------------------------------------------
+Split. squessh has split his hand to two, adding his bet of 100 to his second hand
+Hit. squessh: 4C 4H 
+Hit. squessh: 4S 10C 
+/NOTICE squessh Your Hand: 4C 4H 
+squessh. !Stand, !Hit, or !Surrender?
+------------------------------------------
+Player 2 splits, blackjack on second hand
 ------------------------------------------
 Split. veesh has split his hand to two, adding his bet of 100 to his second hand
-Hit. veesh: 10H 3C 
-Hit. veesh: 10S 4H 
-/NOTICE veesh Your Hand: 10H 3C  <- Current Hand
-/NOTICE veesh Your Hand: 10S 4H 
+Hit. veesh: 10H AH 
+/NOTICE veesh You won 150.0 gold!
+veesh has a natural blackjack! They won 150 gold (1.5x bet)! They now have 550 gold.
+Hit. veesh: 10S 3C 
+/NOTICE veesh Your Hand: 10S 3C 
 veesh. !Stand, !Hit, or !Surrender?
 ------------------------------------------
 Player 2 loses
 ------------------------------------------
-Hit. veesh: 10H 3C 10H 
-/NOTICE veesh You lost your bet of 100 gold. You have 300 left.
+Hit. veesh: 10S 3C 10H 
+/NOTICE veesh You lost your bet of 100 gold. You have 550 left.
 BUST! veesh went over 21. Their bet was lost to the dealer.
-/NOTICE veesh Your Hand: 10S 4H 
-veesh. !Stand, !Hit, or !Surrender?
+/NOTICE pie Your Hand: AC AS 
+pie. !Stand, !Hit, !Surrender, or !Split?
+------------------------------------------
+Player 3 double blackjack
+------------------------------------------
+Split. pie has split his hand to two, adding his bet of 100 to his second hand
+Hit. pie: AC 10H 
+/NOTICE pie You won 150.0 gold!
+pie has a natural blackjack! They won 150 gold (1.5x bet)! They now have 550 gold.
+Hit. pie: AS 10C 
+/NOTICE pie You won 150.0 gold!
+pie has a natural blackjack! They won 150 gold (1.5x bet)! They now have 800 gold.
+Alright, Dealers Turn. The dealer flips his card upright...
+Dealer's Hand: AS 7H 
+Stay. Dealers finishing hand: AS 7H 
+Results for remaining players:
+Table: Dealer - AS 7H  squessh - 4H 5H 5H  squessh - 4S 5D  squessh - 4C 4H  squessh - 4S 10C  
+Dealer's hand beat squessh's hand by 4 points.
+/NOTICE squessh You lost your bet of 200 gold. You have 0 left.
+Dealer's hand beat squessh's hand by 9 points.
+/NOTICE squessh You lost your bet of 100 gold. You have 0 left.
+Dealer's hand beat squessh's hand by 10 points.
+/NOTICE squessh You lost your bet of 100 gold. You have 0 left.
+Dealer's hand beat squessh's hand by 4 points.
+/NOTICE squessh You lost your bet of 100 gold. You have 0 left.
+Game Over!

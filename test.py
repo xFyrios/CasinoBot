@@ -114,7 +114,7 @@ for i in players:
 
 ##########################################
 # Actual Testing!
-deck = setup_deck("AS,7H,AC,AS,10H,10S,4H,4S,4C,5D,5H,10S,AH,3C,4H,10H")
+deck = setup_deck("AS,7H,AC,AS,10H,10S,4H,4S,4C,5D,5H,4S,5H,4H,10C,AH,3C,10H,10H,10C,10S")
 
 sner = make_game(guy.uid, guy.name)
 for i in players:
@@ -143,10 +143,17 @@ with test_banner("DoubleDown after Split"):
 with test_banner("Hand as split player"):
     sner.hand(players[2].uid)
 
+with test_banner("Reaches split limit"):
+    sner.split(players[2].uid)
+
 sner.stand(players[2].uid)
 sner.stand(players[2].uid)
-with test_banner("Player 2 splits"):
+sner.stand(players[2].uid)
+with test_banner("Player 2 splits, blackjack on second hand"):
     sner.split(players[1].uid)
 
 with test_banner("Player 2 loses"):
     sner.hit(players[1].uid)
+
+with test_banner("Player 3 double blackjack"):
+    sner.split(players[0].uid)
