@@ -33,7 +33,7 @@ help = OrderedDict([('start', "To start a game use the command '!start gamename'
                     ('credits', "To view how many credits you have bought, use the command '!credits'."),
                     ('players', "To view all players in-game, use the command !players. Optionally, you can use"
                                 "'!players all' to view all players in the room. If no game is running it will"
-                                "default to all."),
+                                "default to all. Mod only command."),
                     ('player', "To view a players stats use the command '!player username' or '!player userid'. "
                                "Ex. !player Ted")])
 temp_cmds = [] # Holds commands added to help from another module
@@ -158,17 +158,18 @@ def sell(phenny, input):
             phenny.write(('NOTICE', input.nick + " You can only cash out with a positive, non-decimal amount of gold. Ex. !sell 100"))  # NOTICE
 sell.commands = ['sell']
 
-# Show all players or show a players stats
+# Show all players or show a players stats (mods only)
 def players(phenny, input):
-    if len(p.players) > 0:
-        if input.group(0) == "all" or not in_play:
-            phenny.say(p.list_players())
-        elif len(p.in_game) > 0:
-             phenny.say(p.list_in_game())
+    if input.mod:
+        if len(p.players) > 0:
+            if input.group(0) == "all" or not in_play:
+                phenny.say(p.list_players())
+            elif len(p.in_game) > 0:
+                phenny.say(p.list_in_game())
+            else:
+                phenny.say("An error occurred.")
         else:
-            phenny.say("An error occurred.")
-    else:
-        phenny.say("There are currently no players registered.")
+            phenny.say("There are currently no players registered.")
 players.commands = ['players']
 players.priority = 'low'
 
