@@ -68,8 +68,9 @@ casino_quit.rule = r'.*'
 casino_quit.priority = 'high'
 
 def casino_nick(phenny, input):
-    if input.uid in p.players.keys():
-        p.players[input.uid].name = input.args[0];
+    if input:
+        if input.uid in p.players.keys():
+            p.players[input.uid].name = input.args[0];
 casino_nick.event = 'NICK'
 casino_nick.rule = r'.*'
 casino_nick.priority = 'high'	
