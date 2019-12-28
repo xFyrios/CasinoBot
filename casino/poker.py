@@ -409,7 +409,7 @@ class Game:
                 self.t = False
 
             # Order in desc order before removing so we dont lose original positions
-            cards.sort(key=int)
+            #cards.sort(key=int) # NIKO NOTE: Cannot sort face cards (such as J) as int, causes bot to crash.
             cards.reverse()
 
             i = 0
