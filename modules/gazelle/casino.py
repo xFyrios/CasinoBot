@@ -251,6 +251,9 @@ start.priority = 'low'
 
 # Join the currently running game
 def joingame(phenny, input):
+    if not input.uid:
+        phenny.say("Your UID is invalid, you cannot join the game! Pinging Niko")
+        return
     join_casino(input)
     if in_play and not game.started:
         phenny.say(game.join(input.uid))
