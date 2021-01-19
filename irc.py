@@ -147,7 +147,10 @@ class Bot(asynchat.async_chat):
          if self.stack: 
             elapsed = time.time() - self.stack[-1][0]
             if elapsed < 3: 
-               penalty = float(max(0, len(text) - 50)) / 70
+               if text:
+                  penalty = float(max(0, len(text) - 50)) / 70
+               else:
+                  penalty = -50 / 70
                wait = 0.8 + penalty
                if elapsed < wait: 
                   time.sleep(wait - elapsed)
