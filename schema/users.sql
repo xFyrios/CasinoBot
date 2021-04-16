@@ -1,0 +1,4 @@
+CREATE TABLE "users" (
+	"UserID" INTEGER PRIMARY KEY,
+	"Gold" INTEGER DEFAULT 0
+)

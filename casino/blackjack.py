@@ -53,7 +53,7 @@ class Game:
         self.turns = False # The users who have turns, in order, current is at index 0
         self.phenny = phenny
 
-        p.add_player(0, 'Dealer')
+        p.add_player(phenny, 0, 'Dealer')
         p.players[0].hand.hand_value = MethodType(hand_value, p.players[0].hand)
         p.players[0].add_gold(1000000)
         self.starter_uid = uid

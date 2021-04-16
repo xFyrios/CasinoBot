@@ -1,4 +1,4 @@
-import cards, shelve
+import cards
 import player
 
 class HalfProxy:

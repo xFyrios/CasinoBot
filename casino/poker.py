@@ -99,21 +99,24 @@ class Game:
             self.phenny.say("%s, this game has already started!" % p.players[uid].name)
             return
         if uid not in p.players.keys():
-            p.add_player(uid, nick)
-        if self.accept_ante == True and self.stakes != "free":
-            if uid not in p.in_game:
-                self.join(uid)
-            if p.players[uid].ante == True:
-                self.phenny.say("%s, you already ante'd into this game." % p.players[uid].name);
-            elif p.players[uid].gold < self.stakes:
-                self.phenny.say("%s, you do not have enough gold to ante into this game. Use !buy to transfer more gold from the site." % p.players[uid].name)
+            player_added = p.add_player(self.phenny, uid, nick)
+        if player_added:
+            if self.accept_ante == True and self.stakes != "free":
+                if uid not in p.in_game:
+                    self.join(uid)
+                if p.players[uid].ante == True:
+                    self.phenny.say("%s, you already ante'd into this game." % p.players[uid].name);
+                elif p.players[uid].gold < self.stakes:
+                    self.phenny.say("%s, you do not have enough gold to ante into this game. Use !buy to transfer more gold from the site." % p.players[uid].name)
+                else:
+                    p.players[uid].place_bet(self.stakes)
+                    p.players[uid].ante = True
+                    self.betting_pot += self.stakes
+                    self.phenny.say("%s ante'd in with %d gold. They have %d gold left." % (p.players[uid].name, self.stakes, p.players[uid].gold))
             else:
-                p.players[uid].place_bet(self.stakes)
-                p.players[uid].ante = True
-                self.betting_pot += self.stakes
-                self.phenny.say("%s ante'd in with %d gold. They have %d gold left." % (p.players[uid].name, self.stakes, p.players[uid].gold))
+                self.phenny.say("Ante's are not currently being accepted.")
         else:
-            self.phenny.say("Ante's are not currently being accepted.");
+            self.phenny.say("There was an error trying to add you into the game. Please try again.")
 
     def begin_game(self):
         self.t = False

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import blackjack, poker, cards as c, player as p
+import sqlite as sql
 from collections import OrderedDict
 import time
 from threading import Timer
@@ -41,7 +42,7 @@ temp_cmds = [] # Holds commands added to help from another module
 
 # Add/remove users from the players list on join/part
 def casino_join(phenny, input):
-    join_casino(input)
+    join_casino(phenny, input)
 casino_join.event = 'JOIN'
 casino_join.rule = r'.*'
 casino_join.priority = 'high'
@@ -100,18 +101,21 @@ def buy(phenny, input):
 
     amount = args[0]
     if amount.isdigit():
-        join_casino(input)
-        #Ask the site for gold
-        success = phenny.callGazelleApi({'uid': input.uid, 'amount': amount, 'action': 'buyGold'})
-        if success == False or success['status'] == "error":
-            if success['error'] != 'Invalid Form Data' and success['error'] != 'error':
-                phenny.write(('NOTICE', input.nick + " " + success['error']))  # NOTICE
+        joined = join_casino(phenny, input)
+        if joined:
+            #Ask the site for gold
+            success = phenny.callGazelleApi({'uid': input.uid, 'amount': amount, 'action': 'buyGold'})
+            if success == False or success['status'] == "error":
+                if success['error'] != 'Invalid Form Data' and success['error'] != 'error':
+                    phenny.write(('NOTICE', input.nick + " " + success['error']))  # NOTICE
+                else:
+                    phenny.write(('NOTICE', input.nick + " An unknown error occurred."))  # NOTICE
+                return False
             else:
-                phenny.write(('NOTICE', input.nick + " An unknown error occurred."))  # NOTICE
-            return False
+                p.players[input.uid].add_gold(amount)
+                phenny.write(('NOTICE', input.nick + " You bought " + str(amount) + " gold worth of chips."))  # NOTICE
         else:
-            p.players[input.uid].add_gold(amount)
-            phenny.write(('NOTICE', input.nick + " You bought " + str(amount) + " gold worth of chips."))  # NOTICE
+            phenny.say("There was an error trying to add you into the game. Please try again.")
     else:
         phenny.write(('NOTICE', input.nick + " You can only buy in with a positive, non-decimal amount of gold. Ex. !buy 100"))  # NOTICE
 buy.commands = ['buy']
@@ -178,7 +182,7 @@ players.priority = 'low'
 
 def player(phenny, input):
     args = check_args(phenny, input.group(0))
-    join_casino(input)
+    join_casino(phenny, input)
     if len(args) == 0:
         uid = input.uid
     elif args[0].isdigit():
@@ -215,13 +219,16 @@ def start(phenny, input):
             #NEW BLACKJACK GAME
             if args[0] == "blackjack":
                 in_play = True
-                join_casino(input)
-                game = blackjack.Game(phenny, input.uid, input.nick)
-                for item,string in blackjack.help.items():
-                    help[item] = string
-                for item,args in blackjack.arguments.items():
-                    arguments[item] = args
-                    temp_cmds.append(item)
+                joined = join_casino(phenny, input)
+                if joined:
+                    game = blackjack.Game(phenny, input.uid, input.nick)
+                    for item,string in blackjack.help.items():
+                        help[item] = string
+                    for item,args in blackjack.arguments.items():
+                        arguments[item] = args
+                        temp_cmds.append(item)
+                else:
+                    phenny.say("There was an error trying to add you into the game. Please try again.")
             elif args[0] == "poker" or args[0] == "5poker" or args[0] == "7poker" or args[0] == "poker5" or args[0] == "poker7":
                 if len(args) < 2:
                     stakes = "mid"
@@ -234,13 +241,16 @@ def start(phenny, input):
                     cards = 5
 
                 in_play = True
-                join_casino(input)
-                game = poker.Game(phenny, input.uid, input.nick, cards, stakes)
-                for item,string in poker.help.items():
-                    help[item] = string
-                for item,args in poker.arguments.items():
-                    arguments[item] = args
-                    temp_cmds.append(item)
+                joined = join_casino(phenny, input)
+                if joined:
+                    game = poker.Game(phenny, input.uid, input.nick, cards, stakes)
+                    for item,string in poker.help.items():
+                        help[item] = string
+                    for item,args in poker.arguments.items():
+                        arguments[item] = args
+                        temp_cmds.append(item)
+                else:
+                    phenny.say("There was an error trying to add you into the game. Please try again.")
         starting = False
 start.commands = ['start']
 start.priority = 'low'
@@ -254,9 +264,11 @@ def joingame(phenny, input):
     if not input.uid:
         phenny.say("Your UID is invalid, you cannot join the game! Pinging Niko")
         return
-    join_casino(input)
-    if in_play and not game.started:
+    joined = join_casino(phenny, input)
+    if joined and in_play and not game.started:
         phenny.say(game.join(input.uid))
+    elif not joined:
+        phenny.say("There was an error trying to add you into the game. Please try again.")
 joingame.commands = ['enter', 'join']
 joingame.priority = 'high'
 
@@ -348,9 +360,11 @@ def hand(phenny, input):
 #################### 
 
 # Join the player to the players list
-def join_casino(input):
+def join_casino(phenny, input):
     if input.nick not in bots and input.uid not in p.players.keys():
-        p.add_player(input.uid, input.nick)
+        return p.add_player(phenny, input.uid, input.nick)
+    elif input.uid in p.players.keys():
+        return True
 
 # Check amount of args is correct, returns all args or false if incorrect amount
 def check_args(phenny, args):
