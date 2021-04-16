@@ -9,6 +9,7 @@ from types import MethodType
 from collections import OrderedDict
 
 DELAY_TIME = 30.0
+DELAY_SPEED_TIME = 10.0
 
 arguments = {'hit': 0, 'stand': 0, 'stay': 0, 'surrender': 0, 'doubledown': 0, 'double': 0, 'split': 0}
 help = OrderedDict([('hit', "To tell the dealer to give you another card, use the command '!hit'."),
@@ -39,8 +40,10 @@ def hand_value(self):
 
 class Game:
     # The main game object for blackjack
-    def __init__(self, phenny, uid, nick):
+    def __init__(self, phenny, uid, nick, turbo = False):
         self.game_type = "blackjack"
+        self.turbo = turbo
+        self.delay_time = 30.0
         self.started = False
         self.deck = False
         self.accept_bets = False
@@ -58,10 +61,15 @@ class Game:
         p.players[0].add_gold(1000000)
         self.starter_uid = uid
 
-        self.phenny.say("A new game of blackjack has begun! Type !enter if you'd like to play. You have 30 seconds to join.")
+        if self.turbo:
+            self.phenny.say("A new game of turbo blackjack has begun! This is a sped up version of our normal blackjack. Make sure you are ready to go fast! Type !enter if you'd like to play. You have 10 seconds to join.")
+            self.delay_time = DELAY_SPEED_TIME
+        else:
+            self.phenny.say("A new game of blackjack has begun! Type !enter if you'd like to play. You have 30 seconds to join.")
+            self.delay_time = DELAY_TIME
         self.phenny.say(p.add_to_game(self.phenny, uid))
         p.players[uid].hand.hand_value = MethodType(hand_value, p.players[uid].hand)
-        self.t = Timer(DELAY_TIME, self.begin_game)
+        self.t = Timer(self.delay_time, self.begin_game)
         self.timer_start = time.time()
         self.t.start()
 
@@ -79,9 +87,9 @@ class Game:
                     self.begin_game()
 
                 # If half the countdown has already passed, restart the timer
-                elif time.time() - self.timer_start > DELAY_TIME / 2 and self.t:
+                elif time.time() - self.timer_start > self.delay_time / 2 and self.t:
                     self.t.cancel()
-                    self.t = Timer(DELAY_TIME, self.begin_game)
+                    self.t = Timer(self.delay_time, self.begin_game)
                     self.t.start()
             return msg
         elif uid in p.in_game:
@@ -91,16 +99,22 @@ class Game:
 
     def begin_game(self):
         self.t = False
-        self.phenny.say("Welcome to the Casino! This round of blackjack has now begun!")
+        if self.turbo:
+            self.phenny.say("Welcome! This round of turbo blackjack has now begun!")
+        else:
+            self.phenny.say("Welcome to the Casino! This round of blackjack has now begun!")
         if len(p.in_game) > 1:
             self.phenny.say(str("There are %d players this round: %s" % (len(p.in_game), p.list_in_game())))
         else:
             self.phenny.say(str("There is %d player this round: %s" % (len(p.in_game), p.list_in_game())))
 
         # Place bets
-        self.phenny.say("Time to place your initial bets! You have %d seconds. Use '!bet amount' to bet. You can place multiple bets." % DELAY_TIME)
+        if self.turbo:
+            self.phenny.say("Place your bets! You have %d seconds. Use '!bet amount' to bet." % self.delay_time)
+        else:
+            self.phenny.say("Time to place your initial bets! You have %d seconds. Use '!bet amount' to bet. You can place multiple bets." % self.delay_time)
         self.accept_bets = True
-        self.t = Timer(DELAY_TIME, self.deal_cards)
+        self.t = Timer(self.delay_time, self.deal_cards)
         self.t.start()
 
     def bet(self, uid, amount):
@@ -190,7 +204,7 @@ class Game:
         #create the command list programatically
         message = self.command_list()
         self.phenny.say("%s. %s?" % (p.players[uid].name, message))
-        self.t = Timer(DELAY_TIME, self.stand, [p.players[uid].uid, True])
+        self.t = Timer(self.delay_time, self.stand, [p.players[uid].uid, True])
         self.t.start()
 
     def play(self):
@@ -234,7 +248,7 @@ class Game:
 
                 self.phenny.write(('NOTICE', p.players[uid].name + " Your Hand: " + str(p.players[uid].hand)))   # NOTICE
                 self.phenny.say("Hit. %s. !Stand or !Hit?" % p.players[uid].name)
-                self.t = Timer(DELAY_TIME, self.stand, [pid, True])
+                self.t = Timer(self.delay_time, self.stand, [pid, True])
                 self.t.start()
             elif len(p.in_game) == 0:
                 self.show_full_table()
@@ -368,7 +382,10 @@ class Game:
                 self.phenny.write(('NOTICE', p.players[i].name + " Your Hand: %s" % p.players[i].hand + extra))
 
     def dealer_play(self):
-        self.phenny.say("Alright, Dealers Turn. The dealer flips his card upright...")
+        if self.turbo:
+            self.phenny.say("Dealers Turn!")
+        else:
+            self.phenny.say("Alright, Dealers Turn. The dealer flips his card upright...")
         self.phenny.say("Dealer's Hand: " + str(p.players[0].hand))
         while p.players[0].hand.hand_value() < 17:
             p.players[0].hand.add_card(self.deck.deal_card())

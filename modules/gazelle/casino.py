@@ -18,7 +18,8 @@ gold = 0
 
 arguments = {'start': 1, 'enter': 0, 'leave': 0, 'buy': 1, 'sell': 1, 'bet': 1, 'allin': 0, 'bets': 0, 'hand': 0, 'player': 0, 'players': 0}
 help = OrderedDict([('start', "To start a game use the command '!start gamename'. Games you can start include blackjack, poker (5-card), or 7poker (7-card). "
-                              " For poker you can also optionally set the stakes. Ex. '!poker stakes' This can be 'high' or 'low', default is 'normal'. For more info see the wiki."),
+                              " For poker you can also optionally set the stakes. Ex. '!poker stakes' This can be 'high' or 'low', default is 'normal'. For more info see the wiki."
+                              " For blackjack you can optionally set it to a high speed version using '!start blackjack turbo'."),
                     ('enter', "To enter a game that is currently running, use the command '!enter'."),
                     ('leave', "To leave a game that is running, use the command '!leave'. Note that if you have"
                               "placed any bets, your bet will be forfeit."),
@@ -221,7 +222,10 @@ def start(phenny, input):
                 in_play = True
                 joined = join_casino(phenny, input)
                 if joined:
-                    game = blackjack.Game(phenny, input.uid, input.nick)
+                    if 'speed' in args or 'turbo' in args:
+                        game = blackjack.Game(phenny, input.uid, input.nick, True)
+                    else:
+                        game = blackjack.Game(phenny, input.uid, input.nick)
                     for item,string in blackjack.help.items():
                         help[item] = string
                     for item,args in blackjack.arguments.items():
