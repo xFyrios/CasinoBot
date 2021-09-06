@@ -5,16 +5,19 @@ Copyright 2013 AzzA/Mochaka etc.
 Licensed under My Dick.
 """
 
-import json, string, locale
+# TODO delete unused imports
+#import json
+#import string
+import locale
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
-def user(phenny, input):
+def user(phenny, inp):
     """ Gives user stats and information from the site."""
     etx = '\x03'
-    if not input.group(2):
-        user_name = input.nick
+    if not inp.group(2):
+        user_name = inp.nick
     else:
-        user_name = input.group(2).strip()
+        user_name = inp.group(2).strip()
     i = phenny.callGazelleApi({'username': user_name, 'action': 'userInfo'})
     print(i)
 
@@ -77,10 +80,10 @@ user.commands = ['u', 'user']
 user.priority = 'high'
 user.example = '!u Daedy'
 
-def tip(phenny, input):
+def tip(phenny, inp):
     """ For tipping a user on site with gold."""
 
-    args = input.group(0).split()
+    args = inp.group(0).split()
     args.pop(0)
 
     totip = args[0]
@@ -91,8 +94,8 @@ def tip(phenny, input):
     elif int(amount) <= 0:
         phenny.say('You tried to tip an invalid amount.')
     else:
-        i = phenny.callGazelleApi({'userid': input.uid,
-                                   'mod': input.mod,
+        i = phenny.callGazelleApi({'userid': inp.uid,
+                                   'mod': inp.mod,
                                    'totip': totip,
                                    'amount': amount,
                                    'action': 'tipUser'})
