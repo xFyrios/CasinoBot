@@ -23,58 +23,61 @@ def user(phenny, inp):
 
     try:
         # Username
-        o = etx + '10[ ' + etx + '07' + i['username']
+        output = '{0}10[ {0}07{1}'.format(etx, i['username'])
     except KeyError:
-        phenny.say(etx + '10[' + etx + '07 User Not Found ' + etx + '10]')
-        return ""
+        phenny.say('{0}10[{0}07 User Not Found {0}10]'.format(etx))
+        return
 
     # Donor
     if int(i['enable']) == 1 and int(i['donor']) == 1:
-        o += ' ' + etx + '4<3'
+        output += ' ' + etx + '4<3'
     elif int(i['donor']) == 1:
-        o += ' ' + etx + '4</3'
+        output += ' ' + etx + '4</3'
 
-    o += ' ' + etx + '10] :: '
+    output += ' ' + etx + '10] :: '
 
     # Class
-    o += '[ ' + etx + '3Class: ' + etx + '07' + i['class'] + ' ' + etx + '10] :: '
+    output += '[ ' + etx + '3Class: ' + etx + '07' + i['class'] + ' ' + etx + '10] :: '
 
     # Ratio and Stats, depending on paranoia
     if int(i['paranoia']) < 4:
-        o += '[ ' + etx + '3Up: ' + etx + '07' + i['upload'] + ' ' + etx + '12| ' + etx + '3Down: ' + etx + '07' + i['download'] + ' ' + etx + '12| ' + etx + '3Ratio: ' + etx + '07' + i['ratio'] + ' ' + etx + '10] :: '
-        # Gold
-        o += '[ ' + etx + '3Gold: ' + etx + '07' + i['gold'] + ' ' + etx + '10] :: '
+        output +='[ {0}3Up: {0}07{1} {0}12| {0}3Down: {0}07{2} {0} 12| {0}3Ratio: {0}07{3} {0}10] :: [ {0}3Gold: {0}07{4} {0}10] :: '.format(
+            etx, i['upload'], i['download'], i['ratio'], i['gold'])
 
     # Is the user enabled
     if int(i['enable']) == 1:
-        o += '[ ' + etx + '3Enabled: ' + etx + '9Yes ' + etx + '10] :: '
+        output += '[ {0}3Enabled: {0}9Yes {0}10] :: '.format(etx)
     else:
-        o += '[ ' + etx + '3Enabled: ' + etx + '4No ' + etx + '10] :: '
+        output += '[ {0}3Enabled: {0}4No {0}10] :: '.format(etx)
 
     # When was the user last seen
     if int(i['paranoia']) < 5:
-        o += '[ ' + etx + '3Last Seen: ' + etx + '07' + i['lastseen'] + ' ' + etx + '10] :: '
+        output += '[ {0}3Last Seen: {0}07{1} {0}10] :: '.format(etx,
+                                                                i['lastseen'])
 
-    o += etx + '10[ ' + etx + '3Line Count:' + etx + '07 ' + locale.format('%d', int(i['linecount']), 1) + ' ' + etx + '10] :: '
+    output += '{0}10[ {0}3Line Count:{0}07 {1} {0}10] :: '.format(
+        etx,
+        locale.format('%d', int(i['linecount']), 1)
+    )
     """
     # Build the irc bonus tag
-    o += '[ '
+    output += '[ '
     if int(i['bonusdisabled']) == 1:
-        o += etx + '3IRC Bonus: ' + etx + '4No [Disabled]'
+        output += etx + '3IRC Bonus: ' + etx + '4No [Disabled]'
     elif int(i['bonusdisabled']) != 1 and int(i['online']) == 1:
-        o += etx + '3IRC Bonus: ' + etx + '9Yes'
+        output += etx + '3IRC Bonus: ' + etx + '9Yes'
     elif int(i['online']) == 2:
-        o += etx + '3IRC Bonus: ' + etx + '7No [AFK]'
+        output += etx + '3IRC Bonus: ' + etx + '7No [AFK]'
     else:
-        o += etx + '3IRC Bonus: ' + etx + '4No [Offline]'
-    o += ' ' + etx + '10] :: '
+        output += etx + '3IRC Bonus: ' + etx + '4No [Offline]'
+    output += ' ' + etx + '10] :: '
     """
-    o += '[ {0}3Profile: {0}07https://{1}/user.php?id={2} {0}10]'.format(
+    output += '[ {0}3Profile: {0}07https://{1}/user.php?id={2} {0}10]'.format(
         etx,
         phenny.config.gazelle_url,
         i['userid'])
 
-    phenny.say(o)
+    phenny.say(output)
 
 user.commands = ['u', 'user']
 user.priority = 'high'
