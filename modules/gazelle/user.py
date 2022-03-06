@@ -41,7 +41,7 @@ def user(phenny, inp):
 
     # Ratio and Stats, depending on paranoia
     if int(i['paranoia']) < 4:
-        output +='[ {0}3Up: {0}07{1} {0}12| {0}3Down: {0}07{2} {0} 12| {0}3Ratio: {0}07{3} {0}10] :: [ {0}3Gold: {0}07{4} {0}10] :: '.format(
+        output +='[ {0}3Up: {0}07{1} {0}12| {0}3Down: {0}07{2} {0}12| {0}3Ratio: {0}07{3} {0}10] :: [ {0}3Gold: {0}07{4} {0}10] :: '.format(
             etx, i['upload'], i['download'], i['ratio'], i['gold'])
 
     # Is the user enabled
