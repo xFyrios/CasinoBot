@@ -41,14 +41,16 @@ def user(phenny, inp):
 
     # Ratio and Stats, depending on paranoia
     if {'ratio_stats', 'share_score', 'gold'} - set(i['paranoia']):
-        output += '['
+        o += '['
         if 'ratio_stats' not in i['paranoia']:
-            output += ' {0}3Up: {0}07{1} {0}12| {0}3Down: {0}07{2} {0}12| 3Ratio: {0}07{3}'.format(etx, i['upload'], i['download'], i['ratio'])
+            if i['ratio'] == u'∞':
+                i['ratio'] = "Inf."
+            o += u' {0}3Up: {0}07{1} {0}12| {0}3Down: {0}07{2} {0}12| {0}3Ratio: {0}07{3}'.format(etx, i['upload'], i['download'], i['ratio'].encode('utf-8'))
         if 'share_score' not in i['paranoia']:
-            output += ' {0}12| {0}3SS: {0}07{1}'.format(etx, i['sharescore'])
+            o += ' {0}12| {0}3SS: {0}07{1}'.format(etx, i['sharescore'])
         if 'gold' not in i['paranoia']:
             o += ' {0}12| {0}3Gold: {0}07{1}'.format(etx, i['gold'])
-        output += ' {0}10] :: '
+        o += ' {0}10] :: '.format(etx)
 
     # Is the user enabled
     if int(i['enable']) == 1:
