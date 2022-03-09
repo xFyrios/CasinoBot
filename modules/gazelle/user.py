@@ -40,9 +40,15 @@ def user(phenny, inp):
     output += '[ ' + etx + '3Class: ' + etx + '07' + i['class'] + ' ' + etx + '10] :: '
 
     # Ratio and Stats, depending on paranoia
-    if int(i['paranoia']) < 4:
-        output +='[ {0}3Up: {0}07{1} {0}12| {0}3Down: {0}07{2} {0}12| {0}3Ratio: {0}07{3} {0}10] :: [ {0}3Gold: {0}07{4} {0}10] :: '.format(
-            etx, i['upload'], i['download'], i['ratio'], i['gold'])
+    if {'ratio_stats', 'share_score', 'gold'} - set(i['paranoia']):
+        output += '['
+        if 'ratio_stats' not in i['paranoia']:
+            output += ' {0}3Up: {0}07{1} {0}12| {0}3Down: {0}07{2} {0}12| 3Ratio: {0}07{3}'.format(etx, i['upload'], i['download'], i['ratio'])
+        if 'share_score' not in i['paranoia']:
+            output += ' {0}12| {0}3SS: {0}07{1}'.format(etx, i['sharescore'])
+        if 'gold' not in i['paranoia']:
+            o += ' {0}12| {0}3Gold: {0}07{1}'.format(etx, i['gold'])
+        output += ' {0}10] :: '
 
     # Is the user enabled
     if int(i['enable']) == 1:
@@ -51,9 +57,8 @@ def user(phenny, inp):
         output += '[ {0}3Enabled: {0}4No {0}10] :: '.format(etx)
 
     # When was the user last seen
-    if int(i['paranoia']) < 5:
-        output += '[ {0}3Last Seen: {0}07{1} {0}10] :: '.format(etx,
-                                                                i['lastseen'])
+    if 'last_online' not in i['paranoia']:
+        output += '[ {0}3Last Seen: {0}07{1} {0}10] :: '.format(etx, i['lastseen'])
 
     output += '{0}10[ {0}3Line Count:{0}07 {1} {0}10] :: '.format(
         etx,
